@@ -108,12 +108,13 @@ function formatDate(date) {
   return [year, month, day].join('-');
 }
 
-// Client endpoint for auth
+// Client endpoint for authm
 app.get('/auth', (req, res) => {
   console.log('Auth happenedd!');
   res.sendFile(path.join(__dirname, '/auth.html'));
 });
-/*
+
+
 app.get('/widget', (req, res) => {
   console.log('Widget happened!');
   const updatedWidgetResponse = {
@@ -146,7 +147,7 @@ app.get('/widget', (req, res) => {
 
   res.json(updatedWidgetResponse);
 });
-*/
+
 
 // API endpoints
 app.get('/form/metadata', async (req, res) => {
