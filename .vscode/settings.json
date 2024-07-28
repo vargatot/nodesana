@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/5a9e728a-9534-416c-a454-9e870d03cafa/resourceGroups/Promir/providers/Microsoft.Web/sites/nodesana",
+    "appService.deploySubpath": "."
+}
