@@ -179,7 +179,7 @@ app.get('/form/metadata', async (req, res) => {
   const form_response = {
     template: 'form_metadata_v0',
     metadata: {
-      title: "Kilóméter költség",
+      title: "Kilométer költség",
       on_submit_callback: 'https://app-components-example-app.onrender.com/form/submit',
       fields: [
         {
