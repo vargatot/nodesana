@@ -115,6 +115,7 @@ app.get('/auth', (req, res) => {
 });
 
 
+
 app.get('/widget', (req, res) => {
   console.log('Widget happened!');
   const updatedWidgetResponse = {
@@ -131,7 +132,6 @@ app.get('/widget', (req, res) => {
           type: 'text_with_icon',
           text: submittedData.Worker_dropdown || 'No data',
         },
-    
       ],
       footer: {
         footer_type: 'custom_text',
@@ -140,8 +140,8 @@ app.get('/widget', (req, res) => {
       },
       num_comments: 2,
       subicon_url: 'https://placekitten.com/16/16',
-      
-      title: 'Kilóméter költség',
+      subtitle: "I'm a subtitle",
+      title: 'KM költség',
     },
   };
 
@@ -152,7 +152,7 @@ app.get('/widget', (req, res) => {
 // API endpoints
 app.get('/form/metadata', async (req, res) => {
   console.log('Modal Form happened!');
-  
+  console.log('req.query');
   // Extract query parameters
   const { user, task } = req.query;
 
