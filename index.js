@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const Asana = require('asana');
-const { logWorkspaceList, submitDataToSheet } = require('./smartsheet');
+const { logWorkspaceList, submitDataToSheet, getRowsByTaskID } = require('./smartsheet');
 const app = express();
 const port = process.env.PORT || 8000;
 let submittedData = {};
@@ -10,11 +10,12 @@ let submittedData = {};
 // Initialize Asana client
 let client = Asana.ApiClient.instance;
 let token = client.authentications['token'];
-token.accessToken = process.env.ASANA_ACCESS_TOKEN; // Biztosítsuk, hogy a token helyesen van beállítva
-
+token.accessToken = process.env.ASANA_ACCESS_TOKEN; // Ensure the token is set correctly
+let storiesApiInstance = new Asana.StoriesApi();
 let tasksApiInstance = new Asana.TasksApi();
 let projectsApiInstance = new Asana.ProjectsApi();
 let usersApiInstance = new Asana.UsersApi();
+let customFieldSettingsApiInstance = new Asana.CustomFieldSettingsApi();
 
 // Parse JSON bodies
 app.use(express.json());
@@ -46,7 +47,7 @@ async function getTaskDetails(taskId) {
   try {
     const result = await tasksApiInstance.getTask(taskId, opts);
     const task = result.data;
-    console.log('Task details:', task); // Log the task details for debugging
+   
     const project = task.projects.length > 0 ? task.projects[0] : null;
     let projectName = '';
     let projectId = '';
@@ -65,6 +66,7 @@ async function getTaskDetails(taskId) {
       projectId: projectId,
       projectNumber: projectNumber,
       taskName: task.name,
+      taskId: taskId // Include the taskId here
     };
   } catch (error) {
     console.error('Error fetching task details from Asana:', error.message);
@@ -81,7 +83,7 @@ async function getUserDetails(userId) {
   try {
     const result = await usersApiInstance.getUser(userId, opts);
     const user = result.data;
-    console.log('User details:', user); // Log the user details for debugging
+   
 
     return {
       email: user.email,
@@ -89,6 +91,23 @@ async function getUserDetails(userId) {
     };
   } catch (error) {
     console.error('Error fetching user details from Asana:', error.message);
+    throw error;
+  }
+}
+
+// Function to fetch custom fields for a project
+async function getCustomFieldsForProject(projectId) {
+  let opts = { 
+    'limit': 50, 
+    'opt_fields': "custom_field,custom_field.name,custom_field.type"
+  };
+
+  try {
+    const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
+ 
+    return result.data;
+  } catch (error) {
+    console.error('Error fetching custom fields for project:', error.message);
     throw error;
   }
 }
@@ -108,51 +127,15 @@ function formatDate(date) {
   return [year, month, day].join('-');
 }
 
-// Client endpoint for authm
+// Client endpoint for auth
 app.get('/auth', (req, res) => {
-  console.log('Auth happenedd!');
+  console.log('Auth happened!');
   res.sendFile(path.join(__dirname, '/auth.html'));
 });
-
-
-
-app.get('/widget', (req, res) => {
-  console.log('Widget happened!');
-  const updatedWidgetResponse = {
-    template: 'summary_with_details_v0',
-    metadata: {
-      fields: [
-        {
-          name: 'Utolsó Módosítás Dátuma',
-          type: 'datetime_with_icon',
-          datetime: submittedData.date || 'No data',
-        },
-        {
-          name: 'Össz kilóméter',
-          type: 'text_with_icon',
-          text: submittedData.Worker_dropdown || 'No data',
-        },
-      ],
-      footer: {
-        footer_type: 'custom_text',
-        icon_url: 'https://example-icon.png',
-        text: "I'm a footer",
-      },
-      num_comments: 2,
-      subicon_url: 'https://placekitten.com/16/16',
-      subtitle: "I'm a subtitle",
-      title: 'KM költség',
-    },
-  };
-
-  res.json(updatedWidgetResponse);
-});
-
 
 // API endpoints
 app.get('/form/metadata', async (req, res) => {
   console.log('Modal Form happened!');
-  console.log('req.query');
   // Extract query parameters
   const { user, task } = req.query;
 
@@ -172,6 +155,14 @@ app.get('/form/metadata', async (req, res) => {
     return res.status(500).send('Error fetching user details from Asana');
   }
 
+  // Fetch custom fields for the project
+  let customFields;
+  try {
+    customFields = await getCustomFieldsForProject(taskDetails.projectId);
+  } catch (error) {
+    return res.status(500).send('Error fetching custom fields for project');
+  }
+console.log('Custom field kiírás :',customFields);
   // Get current date
   const currentDate = formatDate(new Date());
 
@@ -179,7 +170,7 @@ app.get('/form/metadata', async (req, res) => {
   const form_response = {
     template: 'form_metadata_v0',
     metadata: {
-      title: "Kilóméter költség",
+      title: "Kilométer költség",
       on_submit_callback: 'https://app-components-example-app.onrender.com/form/submit',
       fields: [
         {
@@ -383,6 +374,7 @@ app.get('/form/metadata', async (req, res) => {
           is_required: false,
           placeholder: "0",
           width: "half",
+          value: "0",
         },
         {
           name: "Szerepkör",
@@ -435,41 +427,55 @@ app.get('/search/typeahead', (req, res) => {
 
 app.post('/form/onchange', (req, res) => {
   console.log('OnChange happened!');
-  console.log(req.body);
   res.json(form_response);
 });
 
 app.post('/search/attach', (req, res) => {
   console.log('Attach happened!');
-  console.log(req.body);
   res.json(attachment_response);
 });
 
-app.post('/form/submit', async (req, res) => { // Aszinkron függvényként definiáljuk
+app.post('/form/submit', async (req, res) => { // Asynchronous function
   console.log('Modal Form submitted!');
-  console.log('Request Body:', req.body);
-
+  
   if (req.body.data) {
     try {
       const parsedData = JSON.parse(req.body.data);
       submittedData = parsedData.values || {};
-      
+
+      // Extract task ID from the request body
+      const taskId = req.body.task || parsedData.task || parsedData.AsanaTaskName_SL;
+
+      // Get task details to fetch the task ID
+      const taskDetails = await getTaskDetails(taskId);
+      submittedData.AsanaTaskID_SL = taskDetails.taskId;
+
       // Log the sheet list to console
       logWorkspaceList();
-      
+
       // Submit the data to Smartsheet
       await submitDataToSheet(3802479470110596, 'ASANA Proba', 'Teszt01', submittedData);
+
+      // Read back the rows from the Smartsheet and calculate the total distance
+      const { filteredRows, totalKilometers } = await getRowsByTaskID(3802479470110596, 'ASANA Proba', 'Teszt01', taskDetails.taskId);
+      const commentBody = {
+        data: {
+          text: `Beírt kilométer: ${submittedData.Distance_SL}, összesen: ${totalKilometers}`
+        }
+      };
+      await storiesApiInstance.createStoryForTask(commentBody, taskDetails.taskId);
       
+      // Send the response including the total kilometers
+      res.json({ attachment_response, totalKilometers });
     } catch (error) {
       console.log('Error parsing data:', error);
-      console.log('Submitted Data:', submittedData);
       res.status(500).send('Error submitting data to Smartsheet');
       return;
     }
-  }
-
-  console.log('Submitted Data:', submittedData);
+  }else{
+ 
   res.json(attachment_response);
+}
 });
 
 const attachment_response = {
@@ -497,3 +503,4 @@ const typeahead_response = {
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+

@@ -23,10 +23,10 @@ const columnMapping = {
   AsanaTaskName_SL: 'ASANA TaskName',
   Worker_dropdown: 'Munkavégző',
   date: 'Munkavégzés Dátuma',
-  Distance_SL: 'Kilóméter',
+  Distance_SL: 'Kilométer',
   radio_button: 'Szerepkör',
-  PlateNumber_dropdown:'Rendszám',
-  AsanaTaskID: 'ASANA TaskID'
+  PlateNumber_dropdown: 'Rendszám',
+  AsanaTaskID_SL: 'ASANA TaskID' 
 };
 
 // Function to get sheet columns and submit data to Smartsheet
@@ -60,7 +60,7 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
       return map;
     }, {});
 
-    console.log('Columns:', columns);
+  
 
     // Prepare the row data
     const row = {
@@ -78,7 +78,7 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
       })
     };
 
-    console.log('Row:', row);
+    
 
     // Add the row to the sheet
     await smartsheetClient.sheets.addRows({ sheetId: sheet.id, body: [row] });
@@ -88,4 +88,67 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
   }
 }
 
-module.exports = { logWorkspaceList, submitDataToSheet };
+// Function to get rows from a sheet by Task ID
+async function getRowsByTaskID(workspaceId, folderName, sheetName, taskId) {
+  try {
+    // Get the workspace
+    const workspacesResponse = await smartsheetClient.workspaces.listWorkspaces();
+    const workspace = workspacesResponse.data.find(ws => ws.id == workspaceId);
+    if (!workspace) throw new Error('Workspace not found');
+
+    // Get the details of the workspace to find the folder
+    const workspaceDetails = await smartsheetClient.workspaces.getWorkspace({ id: workspace.id });
+    const folder = workspaceDetails.folders.find(f => f.name === folderName);
+    if (!folder) throw new Error('Folder not found');
+
+    // Get the details of the folder to find the sheet
+    const folderDetails = await smartsheetClient.folders.getFolder({ id: folder.id });
+    const sheet = folderDetails.sheets.find(s => s.name === sheetName);
+    if (!sheet) throw new Error('Sheet not found');
+
+    // Get the sheet details
+    const sheetDetails = await smartsheetClient.sheets.getSheet({ id: sheet.id });
+
+    // Find the column ID for the 'ASANA TaskID' column
+    const taskIdColumn = sheetDetails.columns.find(col => col.title === 'ASANA TaskID');
+    if (!taskIdColumn) throw new Error('ASANA TaskID column not found');
+
+    // Find the column ID for the 'Kilométer' column
+    const kilometerColumn = sheetDetails.columns.find(col => col.title === 'Kilométer');
+    if (!kilometerColumn) throw new Error('Kilométer column not found');
+
+    // Filter rows by Task ID and sum the kilometers
+    const filteredRows = sheetDetails.rows.filter(row => {
+      const taskIdCell = row.cells.find(cell => cell.columnId === taskIdColumn.id);
+      return taskIdCell && taskIdCell.value === taskId;
+    });
+
+    const totalKilometers = filteredRows.reduce((total, row) => {
+      const kilometerCell = row.cells.find(cell => cell.columnId === kilometerColumn.id);
+      return total + (kilometerCell ? parseFloat(kilometerCell.value) || 0 : 0);
+    }, 0);
+
+    return { filteredRows, totalKilometers };
+  } catch (error) {
+    console.error('Error fetching rows from Smartsheet:', error.message);
+    throw error;
+  }
+}
+
+module.exports = { logWorkspaceList, submitDataToSheet, getRowsByTaskID };
+
+// Example usage of getRowsByTaskID
+(async () => {
+  const workspaceId = 3802479470110596;
+  const folderName = 'ASANA Proba';
+  const sheetName = 'Teszt01';
+  const taskId = '1207656737144194';
+
+  try {
+    const { filteredRows, totalKilometers } = await getRowsByTaskID(workspaceId, folderName, sheetName, taskId);
+    console.log('Filtered Rows:', filteredRows);
+    console.log('Total Kilometers:', totalKilometers);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+})();
