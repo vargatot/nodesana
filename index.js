@@ -87,7 +87,7 @@ console.log('Custom field kiírás :',customFields);
     template: 'form_metadata_v0',
     metadata: {
       title: "Kilométer költség",
-      on_submit_callback: 'https://app-components-example-app.onrender.com/form/submit',
+      on_submit_callback: 'https://nodesana.azurewebsites.net/form/submit',
       fields: [
         {
           name: "Projektszám",
@@ -329,7 +329,7 @@ console.log('Custom field kiírás :',customFields);
           ],
         },
       ],
-      on_change_callback: 'https://app-components-example-app.onrender.com/form/onchange',
+      on_change_callback: 'https://nodesana.azurewebsites.net/form/onchange',
     },
   };
 
@@ -399,7 +399,7 @@ app.post('/form/submit', async (req, res) => { // Asynchronous function
 
 const attachment_response = {
   resource_name: "I'm an Attachment",
-  resource_url: 'https://app-components-example-app.onrender.com',
+  resource_url: 'https://nodesana.azurewebsites.net',
 };
 
 const typeahead_response = {
