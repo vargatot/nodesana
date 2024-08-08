@@ -130,4 +130,3 @@ module.exports = {
   updateCustomField,
   storiesApiInstance
 };
-s
