@@ -13,12 +13,7 @@ app.use(express.json());
 // Enable CORS for specific origin
 app.use(cors({
   origin: 'https://app.asana.com',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-// Handle OPTIONS requests before other middleware
-app.options('*', cors());
 
 // Run before every API request
 app.use((req, res, next) => {
@@ -27,7 +22,7 @@ app.use((req, res, next) => {
 
   if (currentDate.getTime() > new Date(expirationDate).getTime()) {
     console.log('Request expired.');
-    return;
+    return res.status(403).send('Request expired.');
   }
 
   next();
@@ -83,7 +78,7 @@ app.get('/form/metadata', async (req, res) => {
   } catch (error) {
     return res.status(500).send('Error fetching custom fields for project');
   }
-  console.log('Custom field kiírás :', customFields);
+ 
 
   // Get current date
   const currentDate = formatDate(new Date());
