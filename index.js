@@ -10,10 +10,15 @@ let submittedData = {};
 // Parse JSON bodies
 app.use(express.json());
 
-// Enable CORS
-app.use(cors({
-  origin: 'https://app.asana.com',
-}));
+// Enable CORS for specific origin
+
+const corsOptions ={
+   origin:'*', 
+   credentials:true,            //access-control-allow-credentials:true
+   optionSuccessStatus:200,
+}
+
+app.use(cors(corsOptions))
 
 // Run before every API request
 app.use((req, res, next) => {
@@ -78,7 +83,8 @@ app.get('/form/metadata', async (req, res) => {
   } catch (error) {
     return res.status(500).send('Error fetching custom fields for project');
   }
-console.log('Custom field kiírás :',customFields);
+  console.log('Custom field kiírás :', customFields);
+
   // Get current date
   const currentDate = formatDate(new Date());
 
@@ -391,10 +397,9 @@ app.post('/form/submit', async (req, res) => { // Asynchronous function
       res.status(500).send('Error submitting data to Smartsheet');
       return;
     }
-  }else{
- 
-  res.json(attachment_response);
-}
+  } else {
+    res.json(attachment_response);
+  }
 });
 
 const attachment_response = {
@@ -420,5 +425,5 @@ const typeahead_response = {
 };
 
 app.listen(port, () => {
-  console.log(`API Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
