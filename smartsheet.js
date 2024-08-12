@@ -137,18 +137,3 @@ async function getRowsByTaskID(workspaceId, folderName, sheetName, taskId) {
 
 module.exports = { logWorkspaceList, submitDataToSheet, getRowsByTaskID };
 
-// Example usage of getRowsByTaskID
-(async () => {
-  const workspaceId = 3802479470110596;
-  const folderName = 'ASANA Proba';
-  const sheetName = 'Teszt01';
-  const taskId = '1207656737144194';
-
-  try {
-    const { filteredRows, totalKilometers } = await getRowsByTaskID(workspaceId, folderName, sheetName, taskId);
-    console.log('Filtered Rows:', filteredRows);
-    console.log('Total Kilometers:', totalKilometers);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-})();
