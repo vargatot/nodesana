@@ -11,13 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "asana": "^3.0.7",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "node-fetch": "^3.3.2",
-    "node-powershell": "^5.0.1",
     "path": "^0.12.7",
-    "smartsheet": "^4.0.2"
+	"smartsheet": "^3.75.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
