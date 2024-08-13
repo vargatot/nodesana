@@ -22,8 +22,9 @@ const columnMapping = {
   ProjectName_SL: 'Projektnév',
   AsanaTaskName_SL: 'ASANA TaskName',
   Worker_dropdown: 'Munkavégző',
-  date: 'Munkavégzés Dátuma',
-  Distance_SL: 'Kilométer',
+  date: 'Munkavégzés dátuma',
+  Distance_SL: 'Távolság',
+  Distance_Time_SL: 'Beírt útidő (ó)',
   radio_button: 'Szerepkör',
   PlateNumber_dropdown: 'Rendszám',
   AsanaTaskID_SL: 'ASANA TaskID' 
@@ -60,7 +61,15 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
       return map;
     }, {});
 
-  
+    // Ensure Distance_SL is treated as a number
+    submittedData.Distance_SL = parseFloat(submittedData.Distance_SL) || 0;
+
+    // Check if Distance_Time_SL is empty or 0 and calculate if necessary
+    if (!submittedData.Distance_Time_SL || submittedData.Distance_Time_SL == 0) {
+      const calculatedTime = (submittedData.Distance_SL / 70).toFixed(2);
+      submittedData.Distance_Time_SL = calculatedTime;
+      console.log(`km: ${submittedData.Distance_SL} - beírandó érték: ${calculatedTime}`);
+    }
 
     // Prepare the row data
     const row = {
@@ -77,8 +86,6 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
         };
       })
     };
-
-    
 
     // Add the row to the sheet
     await smartsheetClient.sheets.addRows({ sheetId: sheet.id, body: [row] });
@@ -113,9 +120,9 @@ async function getRowsByTaskID(workspaceId, folderName, sheetName, taskId) {
     const taskIdColumn = sheetDetails.columns.find(col => col.title === 'ASANA TaskID');
     if (!taskIdColumn) throw new Error('ASANA TaskID column not found');
 
-    // Find the column ID for the 'Kilométer' column
-    const kilometerColumn = sheetDetails.columns.find(col => col.title === 'Kilométer');
-    if (!kilometerColumn) throw new Error('Kilométer column not found');
+    // Find the column ID for the 'Távolság' column
+    const kilometerColumn = sheetDetails.columns.find(col => col.title === 'Távolság');
+    if (!kilometerColumn) throw new Error('Távolság column not found');
 
     // Filter rows by Task ID and sum the kilometers
     const filteredRows = sheetDetails.rows.filter(row => {

@@ -98,8 +98,14 @@ app.get('/form/metadata', async (req, res) => {
           placeholder: "[full width]",
           width: "full",
           value: taskDetails.projectNumber, // Set initial value from Asana
-        },
+        },/*
         {
+          "id": "ProjectNumber_SL",
+          "name": taskDetails.projectNumber,
+          "type": "static_text",
+          "style": "default"
+        },
+      */  {
           name: "Projektnév",
           type: "single_line_text",
           id: "ProjectName_SL",
@@ -107,8 +113,14 @@ app.get('/form/metadata', async (req, res) => {
           placeholder: "[full width]",
           width: "full",
           value: taskDetails.projectName, // Set initial value from Asana
-        },
+        },/*
         {
+          "id": "ProjectName_SL",
+          "name": taskDetails.projectName,
+          "type": "static_text",
+          "style": "default"
+        },
+        */{
           name: "ASANA TaskName",
           type: "single_line_text",
           id: "AsanaTaskName_SL",
@@ -116,7 +128,13 @@ app.get('/form/metadata', async (req, res) => {
           placeholder: "[full width]",
           width: "full",
           value: taskDetails.taskName, // Set initial value from Asana
-        },
+        },/*
+        {
+          "id": "AsanaTaskName_SL",
+          "name": taskDetails.taskName,
+          "type": "static_text",
+          "style": "default"
+        },*/
         {
           name: 'Munkavégző',
           type: 'dropdown',
@@ -124,64 +142,64 @@ app.get('/form/metadata', async (req, res) => {
           is_required: true,
           options: [
             {
-              id: 'banyai.gabor@promir.hu',
+              id: 'Bányai Gábor',
               label: 'Bányai Gábor',
             },
             {
-              id: 'bozoki.robert@promir.hu',
+              id: 'Bozóki Róbert',
               label: 'Bozóki Róbert',
             },
             {
-              id: 'bondar.balazs@promir.hu',
+              id: 'Bondár Balázs',
               label: 'Bondár Balázs',
             },
             {
-              id: 'deak.adam@promir.hu',
+              id: 'Deák Ádám',
               label: 'Deák Ádám',
             },
             {
-              id: 'keller.zoltan@promir.hu',
+              id: 'Keller Zoltán',
               label: 'Keller Zoltán',
             },
             {
-              id: 'klein.antal@promir.hu',
+              id: 'Klein Antal',
               label: 'Klein Antal',
             },
             {
-              id: 'mendei.arpad@promir.hu',
+              id: 'Mendei Árpád',
               label: 'Mendei Árpád',
             },
             {
-              id: 'palecska.gabor@promir.hu',
+              id: 'Palecska Gábor',
               label: 'Palecska Gábor',
             },
             {
-              id: 'sinka.balazs@promir.hu',
+              id: 'Sinka Balázs',
               label: 'Sinka Balázs',
             },
             {
-              id: 'szancsik.ferenc@promir.hu',
+              id: 'Szancsik Ferenc',
               label: 'Szancsik Ferenc',
             },
             {
-              id: 'szepesi.robert@promir.hu',
+              id: 'Szepesi Róbert',
               label: 'Szepesi Róbert',
             },
             {
-              id: 'szollosi.sandor@promir.hu',
+              id: 'Szöllősi Sándor',
               label: 'Szöllősi Sándor',
             },
             {
-              id: 'vargatot@promir.hu',
+              id: 'Varga-Tóth István',
               label: 'Varga-Tóth István',
             },
             {
-              id: 'vtadam@promir.hu',
+              id: 'Varga-Tóth Ádám',
               label: 'Varga-Tóth Ádám',
             },
           ],
           width: 'half',
-          value: userDetails.email, // Set default value to the current user
+          value: userDetails.name, // Set default value to the current user
         },
         {
           name: 'Rendszám',
@@ -280,19 +298,29 @@ app.get('/form/metadata', async (req, res) => {
           name: 'Munkavégzés Dátuma',
           type: 'date',
           id: 'date',
-          is_required: false,
+          is_required: true,
           placeholder: 'Dátum',
           value: currentDate, // Set initial value to current date
         },
         {
-          name: "Kilométer",
+          name: "Távolság (km)",
           type: "single_line_text",
           id: "Distance_SL",
+          is_required: true,
+          placeholder: "0",
+          width: "half",
+          value: "0",
+        },
+        {
+          name: "Útidő (óra)",
+          type: "single_line_text",
+          id: "Distance_Time_SL",
           is_required: false,
           placeholder: "0",
           width: "half",
           value: "0",
         },
+        
         {
           name: "Szerepkör",
           type: "radio_button",
@@ -352,13 +380,28 @@ app.post('/search/attach', (req, res) => {
   res.json(attachment_response);
 });
 
-app.post('/form/submit', async (req, res) => { // Asynchronous function
+app.post('/form/submit', async (req, res) => {
   console.log('Modal Form submitted!');
   
   if (req.body.data) {
     try {
       const parsedData = JSON.parse(req.body.data);
       submittedData = parsedData.values || {};
+
+      // Regular expression to match a valid number (optional decimal point)
+      const validNumberRegex = /^\d+(\.\d+)?$/;
+
+      // Validate the distance field
+      const distance = submittedData.Distance_SL;
+      if (!validNumberRegex.test(distance) || parseFloat(distance) < 0 || parseFloat(distance) > 10000) {
+        return res.status(400).send('Hibás távolság érték. A távolság nem lehet negatív, és maximum 10,000 lehet, illetve csak érvényes szám lehet.');
+      }
+
+      // Validate the travel time field
+      const travelTime = submittedData.Distance_Time_SL;
+      if (!validNumberRegex.test(travelTime) || parseFloat(travelTime) < 0 || parseFloat(travelTime) > 24) {
+        return res.status(400).send('Hibás útidő érték. Az útidő nem lehet negatív, és maximum 24 óra lehet, illetve csak érvényes szám lehet.');
+      }
 
       // Extract task ID from the request body
       const taskId = req.body.task || parsedData.task || parsedData.AsanaTaskName_SL;
@@ -369,18 +412,19 @@ app.post('/form/submit', async (req, res) => { // Asynchronous function
 
       // Log the sheet list to console
       logWorkspaceList();
-
       // Submit the data to Smartsheet
-      await submitDataToSheet(3802479470110596, 'ASANA Proba', 'Teszt01', submittedData);
+     //await submitDataToSheet(3802479470110596, 'ASANA Proba', 'Teszt01', submittedData);
+     await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', submittedData);
 
       // Read back the rows from the Smartsheet and calculate the total distance
-      const { filteredRows, totalKilometers } = await getRowsByTaskID(3802479470110596, 'ASANA Proba', 'Teszt01', taskDetails.taskId);
+      //const { filteredRows, totalKilometers } = await getRowsByTaskID(3802479470110596, 'ASANA Proba', 'Teszt01', taskDetails.taskId);
+      const { filteredRows, totalKilometers } = await getRowsByTaskID(8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', taskDetails.taskId);
       const commentBody = {
         data: {
           text: `Beírt kilométer: ${submittedData.Distance_SL}, összesen: ${totalKilometers}`
         }
       };
-      await storiesApiInstance.createStoryForTask(commentBody, taskDetails.taskId);
+      //await storiesApiInstance.createStoryForTask(commentBody, taskDetails.taskId);
       
       // Update custom field value for the task
       await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
@@ -396,6 +440,8 @@ app.post('/form/submit', async (req, res) => { // Asynchronous function
     res.json(attachment_response);
   }
 });
+
+
 
 const attachment_response = {
   resource_name: "I'm an Attachment",
