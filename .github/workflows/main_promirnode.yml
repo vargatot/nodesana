@@ -59,4 +59,4 @@ jobs:
           app-name: 'promirnode'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_37EB9C6285724E9AA6087C86F285FA63 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7C3E6F83FC004E3881A554C921781D5A }}
