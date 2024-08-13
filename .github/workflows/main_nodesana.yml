@@ -59,4 +59,4 @@ jobs:
           app-name: 'nodesana'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_FF6B47893CA44CF29847730007A936F9 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_035B6228592C495D822F864D8171ED42 }}
