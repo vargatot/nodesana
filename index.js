@@ -312,7 +312,7 @@ app.get('/form/metadata', async (req, res) => {
           value: "0",
         },
         {
-          name: "Útidő (óra)",
+          name: "Útidő (óra) - [Nem kötelező]",
           type: "single_line_text",
           id: "Distance_Time_SL",
           is_required: false,
