@@ -14,6 +14,7 @@ let customFieldsApiInstance = new Asana.CustomFieldsApi();
 
 // Function to get task details from Asana
 async function getTaskDetails(taskId) {
+  let firstTaskID=taskId;
   let opts = {
     'opt_fields': "name,projects,parent"
   };
@@ -58,7 +59,7 @@ async function getTaskDetails(taskId) {
       projectId: projectId,
       projectNumber: projectNumber,
       taskName: task.name,
-      taskId: task.gid // Include the taskId here
+      taskId: firstTaskID // Include the taskId here
     };
   } catch (error) {
     console.error('Error fetching task details from Asana:', error.message);
