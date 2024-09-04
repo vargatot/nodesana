@@ -91,7 +91,7 @@ app.get('/form/metadata', async (req, res) => {
   // Extract query parameters
   const { user, task } = req.query;
   console.log(req.query);
-  console.log('-------------------------------------------------1');
+
   // Get task details from Asana
   let taskDetails;
   try {
@@ -100,7 +100,7 @@ app.get('/form/metadata', async (req, res) => {
   } catch (error) {
     return res.status(500).send('Error fetching task details from Asana');
   }
-  console.log('-------------------------------------------------2');
+
   // Get user details from Asana
   let userDetails;
   try {
