@@ -90,7 +90,7 @@ app.get('/form/metadata', async (req, res) => {
   console.log('Modal Form happened!');
   // Extract query parameters
   const { user, task } = req.query;
-
+  console.log(req.query);
   // Get task details from Asana
   let taskDetails;
   try {
