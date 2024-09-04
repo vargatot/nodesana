@@ -21,7 +21,9 @@ async function getTaskDetails(taskId) {
   try {
     const result = await tasksApiInstance.getTask(taskId, opts);
     const task = result.data;
-   
+    console.log('test');
+    console.log(result);
+    console.log('test2');
     const project = task.projects.length > 0 ? task.projects[0] : null;
     let projectName = '';
     let projectId = '';
