@@ -14,19 +14,35 @@ let customFieldsApiInstance = new Asana.CustomFieldsApi();
 
 // Function to get task details from Asana
 async function getTaskDetails(taskId) {
-  let opts = { 
-    'opt_fields': "name,projects"
+  let opts = {
+    'opt_fields': "name,projects,parent"
   };
 
+  let attempts = 0;
+  let maxAttempts = 5;
+  let task;
+  let project = null;
+  let projectName = '';
+  let projectId = '';
+  
   try {
-    const result = await tasksApiInstance.getTask(taskId, opts);
-    const task = result.data;
-    console.log('test');
-    console.log(result);
-    console.log('test2');
-    const project = task.projects.length > 0 ? task.projects[0] : null;
-    let projectName = '';
-    let projectId = '';
+    while (attempts < maxAttempts) {
+      const result = await tasksApiInstance.getTask(taskId, opts);
+      task = result.data;
+      console.log("Attempt:",attempts);
+      if (task.projects && task.projects.length > 0) {
+        project = task.projects[0];
+        break;
+      }
+
+      if (task.parent) {
+        taskId = task.parent.gid; // Get the parent task id and continue the loop
+      } else {
+        break; // No parent, no project, end the loop
+      }
+
+      attempts++;
+    }
 
     if (project) {
       const projectResult = await projectsApiInstance.getProject(project.gid);
@@ -42,13 +58,14 @@ async function getTaskDetails(taskId) {
       projectId: projectId,
       projectNumber: projectNumber,
       taskName: task.name,
-      taskId: taskId // Include the taskId here
+      taskId: task.gid // Include the taskId here
     };
   } catch (error) {
     console.error('Error fetching task details from Asana:', error.message);
     throw error;
   }
 }
+
 
 // Function to get user details from Asana
 async function getUserDetails(userId) {
@@ -80,6 +97,8 @@ async function getCustomFieldsForProject(projectId) {
   console.log("-------------1");
   try {
     const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
+
+
     console.log(result.data);
     console.log("-------------2");
     return result.data;
