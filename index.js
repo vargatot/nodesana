@@ -207,6 +207,10 @@ app.get('/form/metadata', async (req, res) => {
               label: 'Szöllősi Sándor',
             },
             {
+              id: 'Tóth Szabolcs',
+              label: 'Tóth Szabolcs',
+            },
+            {
               id: 'Varga-Tóth István',
               label: 'Varga-Tóth István',
             },
@@ -234,6 +238,10 @@ app.get('/form/metadata', async (req, res) => {
             },
             {
               id: 'AEDH-132',
+              label: 'AEDH-132',
+            },
+            {
+              id: 'AEEC-156',
               label: 'AEDH-132',
             },
             {
