@@ -74,9 +74,12 @@ async function getCustomFieldsForProject(projectId) {
     'limit': 50, 
     'opt_fields': "custom_field,custom_field.name,custom_field.type"
   };
-
+  console.log(projectId);
+  console.log("-------------1");
   try {
     const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
+    console.log(result.data);
+    console.log("-------------2");
     return result.data;
   } catch (error) {
     console.error('Error fetching custom fields for project:', error.message);
