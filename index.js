@@ -339,7 +339,7 @@ app.get('/form/metadata', async (req, res) => {
           name: "Útidő (óra) - [Nem kötelező]",
           type: "single_line_text",
           id: "Distance_Time_SL",
-          is_required: false,
+          is_required: true,
           placeholder: "0",
           width: "half",
           value: "0",
@@ -418,17 +418,22 @@ app.post('/form/submit', async (req, res) => {
 
         // Validate the distance field
         const distance = submittedData.Distance_SL;
+        
+        if(!validNumberRegex.test(distance)){
+          distance=0;
+          submittedData.Distance_SL=0;
+        }
         if (!validNumberRegex.test(distance) || parseFloat(distance) < 0 || parseFloat(distance) > 10000) {
           return res.status(400).send('Hibás távolság érték. A távolság nem lehet negatív, és maximum 10,000 lehet, illetve csak érvényes szám lehet.');
         }
 
         // Validate the travel time field
-        
+       /* 
         const travelTime = submittedData.Distance_Time_SL;
         if(!validNumberRegex.test(travelTime)){
           travelTime=0;
           submittedData.Distance_Time_SL=0;
-        }
+        }*/
         if (!validNumberRegex.test(travelTime) || parseFloat(travelTime) < 0 || parseFloat(travelTime) > 24) {
           return res.status(400).send('Hibás útidő érték. Az útidő nem lehet negatív, és maximum 24 óra lehet, illetve csak érvényes szám lehet.');
         }
