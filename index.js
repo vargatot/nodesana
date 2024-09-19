@@ -428,8 +428,9 @@ app.post('/form/submit', async (req, res) => {
         }
 
         // Validate the travel time field
-       /* 
+       
         const travelTime = submittedData.Distance_Time_SL;
+        /* 
         if(!validNumberRegex.test(travelTime)){
           travelTime=0;
           submittedData.Distance_Time_SL=0;
