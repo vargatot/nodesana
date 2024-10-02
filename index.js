@@ -579,12 +579,10 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
         // Submit the data to Smartsheet
         await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Külsős munkalap', submittedData);
 
-        // Read back the rows from the Smartsheet and calculate the total distance
-        const { filteredRows, totalKilometers } = await getRowsByTaskID(8740124331665284, 'Munkaidő és kiszállás', 'Külsős munkalap', '0');
-        
+     
 
         // Send the response including the total kilometers
-        res.json({ attachment_response, totalKilometers });
+        res.json({ attachment_response });
       });
     } catch (error) {
       console.log('Error parsing data:', error);
