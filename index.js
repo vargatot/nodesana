@@ -154,6 +154,7 @@ app.get('/form/metadata', async (req, res) => {
           width: "full",
           value: taskDetails.taskName, // Set initial value from Asana
         },
+        
         {
           name: 'Munkavégző',
           type: 'dropdown',
@@ -389,9 +390,101 @@ app.get('/form/metadata', async (req, res) => {
   res.json(form_response);
 });
 
-app.get('/search/typeahead', (req, res) => {
-  console.log('Typeahead happened!');
-  res.json(typeahead_response);
+app.get('/kulsosmunkalap/metadata', async (req, res) => {
+  console.log('Külsős munkalap Form happened!');
+  // Extract query parameters
+  const { user, task } = req.query;
+  console.log(req.query);
+
+  // Get task details from Asana
+  let taskDetails;
+  try {
+    taskDetails = await getTaskDetails(task);
+    console.log(taskDetails);
+  } catch (error) {
+    return res.status(500).send('Error fetching task details from Asana');
+  }
+
+  // Get user details from Asana
+  let userDetails;
+  try {
+    userDetails = await getUserDetails(user);
+  } catch (error) {
+    return res.status(500).send('Error fetching user details from Asana');
+  }
+
+  // Fetch custom fields for the project
+
+  // Get current date
+  const currentDate = formatDate(new Date());
+
+  // Form response with initial values
+  const form_response = {
+    template: 'form_metadata_v0',
+    metadata: {
+      title: "Új munkalap létrehozása",
+      on_submit_callback: 'https://nodesana.azurewebsites.net/kulsosmunkalap/submit',
+      fields: [
+        {
+          name: "Projektszám",
+          type: "single_line_text",
+          id: "ProjectNumber_SL",
+          is_required: false,
+          placeholder: "[full width]",
+          width: "full",
+          value: taskDetails.projectNumber, // Set initial value from Asana
+        },
+        {
+          name: 'Munkavégző',
+          type: 'dropdown',
+          id: 'Worker_dropdown',
+          is_required: true,
+          options: [
+            {
+              id: 'Bányai Gábor',
+              label: 'Bányai Gábor',
+            },
+            {
+              id: 'Mendei Árpád',
+              label: 'Mendei Árpád',
+            },
+          ],
+          width: 'half',
+          value: '', // Set default value to the current user
+        },
+        {
+          name: 'Projektvezető',
+          type: 'dropdown',
+          id: 'PV_dropdown',
+          is_required: true,
+          options: [
+            {
+              id: 'Bányai Gábor',
+              label: 'Bányai Gábor',
+            },
+            {
+              id: 'Mendei Árpád',
+              label: 'Mendei Árpád',
+            },
+          ],
+          width: 'half',
+          value: userDetails.name, // Set default value to the current user
+        },
+        {
+          name: 'Munkavégzés Dátuma',
+          type: 'date',
+          id: 'date',
+          is_required: true,
+          placeholder: 'Dátum',
+          value: currentDate, // Set initial value to current date
+        },
+        
+      ],
+      on_change_callback: 'https://nodesana.azurewebsites.net/kulsosmunkalap/onchange',
+    },
+  };
+
+  res.json(form_response);
 });
 
 app.post('/form/onchange', (req, res) => {
@@ -472,7 +565,41 @@ app.post('/form/submit', async (req, res) => {
     res.json(attachment_response);
   }
 });
+app.post('/kulsosmunkalap/submit', async (req, res) => {
+  console.log('Kulsos munkalap Form submitted!');
+  
+  if (req.body.data) {
+    try {
+      await submitQueue.add(async () => {
+        const parsedData = JSON.parse(req.body.data);
+        submittedData = parsedData.values || {};
 
+
+        // Get task details to fetch the task ID
+        const taskDetails = await getTaskDetails(taskId);
+        submittedData.AsanaTaskID_SL = taskDetails.taskId;
+
+        // Log the sheet list to console
+        logWorkspaceList();
+        // Submit the data to Smartsheet
+        await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Külsős munkalap', submittedData);
+
+        // Read back the rows from the Smartsheet and calculate the total distance
+        const { filteredRows, totalKilometers } = await getRowsByTaskID(8740124331665284, 'Munkaidő és kiszállás', 'Külsős munkalap', '0');
+        
+
+        // Send the response including the total kilometers
+        res.json({ attachment_response, totalKilometers });
+      });
+    } catch (error) {
+      console.log('Error parsing data:', error);
+      res.status(500).send('Error submitting data to Smartsheet');
+      return;
+    }
+  } else {
+    res.json(attachment_response);
+  }
+});
 const attachment_response = {
   resource_name: "I'm an Attachment",
   resource_url: 'https://nodesana.azurewebsites.net',
