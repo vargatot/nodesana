@@ -39,7 +39,8 @@ const KulsosMunkalapcolumnMapping = {
 
 // Function to get sheet columns and submit data to Smartsheet
 async function submitDataToSheet(workspaceId, folderName, sheetName, submittedData) {
-  if (sheetName='Projektköltségek'){
+  console.log(sheetName);
+  if (sheetName=='Projektköltségek'){
     try {
       // Get the workspace
       const workspacesResponse = await smartsheetClient.workspaces.listWorkspaces();
