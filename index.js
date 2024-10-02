@@ -574,11 +574,6 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
         const parsedData = JSON.parse(req.body.data);
         submittedData = parsedData.values || {};
 
-
-        // Get task details to fetch the task ID
-        const taskDetails = await getTaskDetails(taskId);
-        submittedData.AsanaTaskID_SL = taskDetails.taskId;
-
         // Log the sheet list to console
         logWorkspaceList();
         // Submit the data to Smartsheet
