@@ -34,12 +34,13 @@ const KulsosMunkalapcolumnMapping = {
   ProjectNumber_SL: 'Projektszám',
   Worker_dropdown: 'Munkavégző',
   date: 'Munkavégzés dátuma',
-  PV_dropdown: 'Projektvezető'
+  PV_dropdown: 'Projektvezető',
+  PV_Leiras_ML: 'Projektvezető leírása'
 };
 
 // Function to get sheet columns and submit data to Smartsheet
 async function submitDataToSheet(workspaceId, folderName, sheetName, submittedData) {
-  console.log(sheetName);
+ 
   if (sheetName=='Projektköltségek'){
     try {
       // Get the workspace

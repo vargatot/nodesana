@@ -441,11 +441,11 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           is_required: true,
           options: [
             {
-              id: 'Bányai Gábor',
+              id: 'banyai.gabor@promir.hu',
               label: 'Bányai Gábor',
             },
             {
-              id: 'Mendei Árpád',
+              id: 'mendei.arpad@promir.hu',
               label: 'Mendei Árpád',
             },
           ],
@@ -459,11 +459,11 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           is_required: true,
           options: [
             {
-              id: 'Bányai Gábor',
+              id: 'banyai.gabor@promir.hu',
               label: 'Bányai Gábor',
             },
             {
-              id: 'Mendei Árpád',
+              id: 'mendei.arpad@promir.hu',
               label: 'Mendei Árpád',
             },
           ],
@@ -477,6 +477,14 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           is_required: true,
           placeholder: 'Dátum',
           value: currentDate, // Set initial value to current date
+        },
+        {
+          type: 'multi_line_text',
+          id: 'PV_Leiras_ML',
+          name: 'Multi-line text field',
+          value: '',
+          is_required: false,
+          placeholder: '...',
         },
         
       ],
