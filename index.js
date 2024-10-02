@@ -481,7 +481,7 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
         {
           type: 'multi_line_text',
           id: 'PV_Leiras_ML',
-          name: 'Multi-line text field',
+          name: 'Megjegyzés',
           value: '',
           is_required: false,
           placeholder: '...',
