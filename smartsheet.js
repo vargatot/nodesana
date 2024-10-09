@@ -6,15 +6,7 @@ const smartsheetClient = smartsheet.createClient({
 });
 
 // Function to get and log sheet list
-function logWorkspaceList() {
-  smartsheetClient.workspaces.listWorkspaces()
-    .then(function(workspaceList) {
-      console.log('Workspaces in Smartsheet:', workspaceList);
-    })
-    .catch(function(error) {
-      console.error('Error listing workspaces:', error.message);
-    });
-}
+
 
 // Mapping of submittedData keys to Smartsheet column names
 const columnMapping = {
@@ -100,17 +92,7 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
         })
       };
 
-      // Add the worker email to the row (assuming userDetails.email holds the email address)
-      row.cells.push({
-        columnId: columns['UserID'], // Column ID for 'UserID'
-        value: userDetails.email // Assuming userDetails contains the email
-      });
 
-      // Add the Asana task link to the row
-      row.cells.push({
-        columnId: columns['AsanaTaskLink'], // Column ID for 'AsanaTaskLink'
-        value: `https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId}` // Constructing the Asana task link
-      });
 
 
       // Add the row to the sheet

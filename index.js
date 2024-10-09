@@ -108,13 +108,13 @@ app.get('/form/metadata', async (req, res) => {
   console.log('Modal Form happened!');
   // Extract query parameters
   const { user, task } = req.query;
-  console.log(req.query);
+ 
 
   // Get task details from Asana
   let taskDetails;
   try {
     taskDetails = await getTaskDetails(task);
-    console.log(taskDetails);
+    
   } catch (error) {
     return res.status(500).send('Error fetching task details from Asana');
   }
@@ -412,13 +412,13 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
   console.log('Külsős munkalap Form happened!');
   // Extract query parameters
   const { user, task } = req.query;
-  console.log(req.query);
+ 
 
   // Get task details from Asana
   let taskDetails;
   try {
     taskDetails = await getTaskDetails(task);
-    console.log(taskDetails);
+    
   } catch (error) {
     return res.status(500).send('Error fetching task details from Asana');
   }
@@ -568,10 +568,11 @@ app.post('/form/submit', async (req, res) => {
         const workerName = submittedData.Worker_dropdown; // Assuming the worker's name is stored here
         const workerEmail = workerEmailMapping[workerName] || 'default.email@promir.hu'; // Fallback email in case the worker's name is not found
         submittedData.UserID = workerEmail; // Store the worker's email
-
+        console.log(workerEmail);
+   
         // Construct the Asana task link
         submittedData.AsanaTaskLink = `https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId}`;
-         
+        console.log(submittedData.AsanaTaskLink);
         // Log the sheet list to console
         logWorkspaceList();
         // Submit the data to Smartsheet
