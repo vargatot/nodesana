@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { logWorkspaceList, submitDataToSheet, getRowsByTaskID } = require('./smartsheet');
+const { submitDataToSheet, getRowsByTaskID } = require('./smartsheet');
 const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance } = require('./asana');
 const app = express();
 const port = process.env.PORT || 8000;
@@ -574,7 +574,7 @@ app.post('/form/submit', async (req, res) => {
         submittedData.AsanaTaskLink = `https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId}`;
         console.log(submittedData.AsanaTaskLink);
         // Log the sheet list to console
-        logWorkspaceList();
+      
         // Submit the data to Smartsheet
         await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', submittedData);
 
@@ -609,7 +609,7 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
         submittedData = parsedData.values || {};
 
         // Log the sheet list to console
-        logWorkspaceList();
+        
         // Submit the data to Smartsheet
         await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Külsős munkalap', submittedData);
 

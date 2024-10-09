@@ -202,5 +202,5 @@ async function getRowsByTaskID(workspaceId, folderName, sheetName, taskId) {
   }
 }
 
-module.exports = { logWorkspaceList, submitDataToSheet, getRowsByTaskID };
+module.exports = { submitDataToSheet, getRowsByTaskID };
 
