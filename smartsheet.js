@@ -27,7 +27,9 @@ const columnMapping = {
   Distance_Time_SL: 'Beírt útidő (ó)',
   radio_button: 'Szerepkör',
   PlateNumber_dropdown: 'Rendszám',
-  AsanaTaskID_SL: 'ASANA TaskID' 
+  AsanaTaskID_SL: 'ASANA TaskID',
+  UserID: 'UserID', // New column for storing the email
+  AsanaTaskLink: 'ASANA TaskLink' // New column for storing the task link
 };
 
 const KulsosMunkalapcolumnMapping = {
@@ -82,6 +84,7 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
       }
 
       // Prepare the row data
+     // Prepare the row data
       const row = {
         toBottom: true,
         cells: Object.keys(submittedData).map(key => {
@@ -95,8 +98,20 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
             value: submittedData[key]
           };
         })
-        
       };
+
+      // Add the worker email to the row (assuming userDetails.email holds the email address)
+      row.cells.push({
+        columnId: columns['UserID'], // Column ID for 'UserID'
+        value: userDetails.email // Assuming userDetails contains the email
+      });
+
+      // Add the Asana task link to the row
+      row.cells.push({
+        columnId: columns['AsanaTaskLink'], // Column ID for 'AsanaTaskLink'
+        value: `https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId}` // Constructing the Asana task link
+      });
+
 
       // Add the row to the sheet
       await smartsheetClient.sheets.addRows({ sheetId: sheet.id, body: [row] });

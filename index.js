@@ -27,6 +27,24 @@ app.use((req, res, next) => {
 
   next();
 });
+const workerEmailMapping = {
+  'Bányai Gábor': 'banyai.gabor@promir.hu', // Replace with the actual email
+  'Bozóki Róbert': 'bozoki.robert@promir.hu', // Replace with the actual email
+  'Bondár Balázs': 'bondar.balazs@promir.hu', // Replace with the actual email
+  'Deák Ádám': 'deak.adam@promir.hu', // Replace with the actual email
+  'Keller Zoltán': 'keller.zoltan@promir.hu', // Replace with the actual email
+  'Klein Antal': 'klein.antal@promir.hu', // Replace with the actual email
+  'Mendei Árpád': 'mendei.arpad@promir.hu', // Replace with the actual email
+  'Palecska Gábor': 'palecska.gabor@promir.hu', // Replace with the actual email
+  'Sinka Balázs': 'sinka.balazs@promir.hu', // Replace with the actual email
+  'Szancsik Ferenc': 'szancsik.ferenc@promir.hu', // Replace with the actual email
+  'Szepesi Róbert': 'szepesi.robert@promir.hu', // Replace with the actual email
+  'Szöllősi Sándor': 'szollosi.sandor@promir.hu', // Replace with the actual email
+  'Tóth Szabolcs': 'toth.szabolcs@promir.hu', // Replace with the actual email
+  'Varga-Tóth István': 'vargatot@promir.hu', // Replace with the actual email
+  'Varga-Tóth Ádám': 'vtadam@promir.hu', // Replace with the actual email
+  // Add more workers here as needed
+};
 
 // Function to format date to YYYY-MM-DD
 function formatDate(date) {
@@ -547,6 +565,13 @@ app.post('/form/submit', async (req, res) => {
         const taskDetails = await getTaskDetails(taskId);
         submittedData.AsanaTaskID_SL = taskDetails.taskId;
 
+        const workerName = submittedData.Worker_dropdown; // Assuming the worker's name is stored here
+        const workerEmail = workerEmailMapping[workerName] || 'default.email@promir.hu'; // Fallback email in case the worker's name is not found
+        submittedData.UserID = workerEmail; // Store the worker's email
+
+        // Construct the Asana task link
+        submittedData.AsanaTaskLink = `https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId}`;
+         
         // Log the sheet list to console
         logWorkspaceList();
         // Submit the data to Smartsheet
