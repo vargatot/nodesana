@@ -501,12 +501,41 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           is_required: true,
           options: [
             {
-              id: 'banyai.gabor@promir.hu',
-              label: 'Bányai Gábor',
+              id: 'bozoki.robert@promir.hu',
+              label: 'Bozóki Róbert',
             },
             {
-              id: 'mendei.arpad@promir.hu',
-              label: 'Mendei Árpád',
+              id: 'bondar.balazs@promir.hu',
+              label: 'Bondár Balázs',
+            },
+            {
+              id: 'deak.adam@promir.hu',
+              label: 'Deák Ádám',
+            },
+            {
+              id: 'palecska.gabor@promir.hu',
+              label: 'Palecska Gábor',
+            },
+
+            {
+              id: 'szancsik.ferenc@promir.hu',
+              label: 'Szancsik Ferenc',
+            },
+            {
+              id: 'szepesi.robert@promir.hu',
+              label: 'Szepesi Róbert',
+            },
+            {
+              id: 'szollosi.sandor@promir.hu',
+              label: 'Szöllősi Sándor',
+            },
+            {
+              id: 'vargatot@promir.hu',
+              label: 'Varga-Tóth István',
+            },
+            {
+              id: 'vtadam@promir.hu',
+              label: 'Varga-Tóth Ádám',
             },
           ],
           width: 'half',
