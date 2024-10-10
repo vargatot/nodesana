@@ -77,7 +77,7 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
 
       // Prepare the row data
       if (submittedData.Distance_Time_SL) {
-        submittedData.Distance_Time_SL = submittedData.Distance_Time_SL.replace('.', ',');
+        submittedData.Distance_Time_SL = parseFloat(submittedData.Distance_Time_SL.replace(',', '.')); // Ensure it's a number with '.' as a decimal separator
       }
      // Prepare the row data
       const row = {
