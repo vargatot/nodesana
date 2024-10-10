@@ -480,7 +480,7 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
             },
             {
               id: 'zsolt.deak@nexuselectro.hu',
-              label: 'Nexu Electro Kft.',
+              label: 'Nexus Electro Kft.',
             },
             {
               id: 'lantos.villszer@gmail.com',
