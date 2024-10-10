@@ -459,12 +459,36 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           is_required: true,
           options: [
             {
-              id: 'banyai.gabor@promir.hu',
-              label: 'Bányai Gábor',
+              id: 'sharaszti@elektrofox.hu',
+              label: 'Elektrofox Kft.',
             },
             {
-              id: 'mendei.arpad@promir.hu',
-              label: 'Mendei Árpád',
+              id: 'fejes.delalfoldszolar@gmail.com',
+              label: 'Dél-Alföld Szolár Kft.',
+            },
+            {
+              id: 'lesliemiller.hu@gmail.com',
+              label: 'Molnár László EV',
+            },
+            {
+              id: 's.lajoslorant@gmail.com',
+              label: 'Schmidt Lajos Lóránt EV',
+            },
+            {
+              id: 'angyo.no1@gmail.com',
+              label: 'Garai János EV',
+            },
+            {
+              id: 'zsolt.deak@nexuselectro.hu',
+              label: 'Nexu Electro Kft.',
+            },
+            {
+              id: 'lantos.villszer@gmail.com',
+              label: 'Lantos Tamás EV',
+            },
+            {
+              id: 'sipos.zoltan@electricart.hu',
+              label: 'TOSILA BT',
             },
           ],
           width: 'half',
