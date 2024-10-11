@@ -448,7 +448,7 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           type: "single_line_text",
           id: "ProjectNumber_SL",
           is_required: false,
-          placeholder: "[full width]",
+          placeholder: "Projektszám megadása kötelező!",
           width: "full",
           value: taskDetails.projectNumber, // Set initial value from Asana
         },
@@ -558,9 +558,9 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           type: "single_line_text",
           id: "Working_Place_SL",
           is_required: false,
-          placeholder: "[full width]",
+          placeholder: "",
           width: "full",
-          value: taskDetails.projectNumber, // Set initial value from Asana
+          
         },
         {
           type: 'multi_line_text',
