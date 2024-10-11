@@ -409,7 +409,7 @@ app.get('/form/metadata', async (req, res) => {
 });
 
 app.get('/kulsosmunkalap/metadata', async (req, res) => {
-  console.log('Külsős munkalap Form happened!');
+  console.log('Összesített alvállalkozói munkalap Form happened!');
   // Extract query parameters
   const { user, task } = req.query;
  
@@ -668,7 +668,7 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
         // Log the sheet list to console
         
         // Submit the data to Smartsheet
-        await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Külsős munkalap', submittedData);
+        await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Összesített alvállalkozói munkalap', submittedData);
 
      
 
