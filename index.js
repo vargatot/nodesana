@@ -554,6 +554,15 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           value: currentDate, // Set initial value to current date
         },
         {
+          name: "Munkavégzés helyszíne",
+          type: "single_line_text",
+          id: "Working_Place_SL",
+          is_required: false,
+          placeholder: "[full width]",
+          width: "full",
+          value: taskDetails.projectNumber, // Set initial value from Asana
+        },
+        {
           type: 'multi_line_text',
           id: 'PV_Leiras_ML',
           name: 'Megjegyzés',
