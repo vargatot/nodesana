@@ -15,7 +15,6 @@ const columnMapping = {
   AsanaTaskName_SL: 'ASANA TaskName',
   Worker_dropdown: 'Munkavégző',
   date: 'Munkavégzés dátuma',
-  Working_Place_SL: 'Helyszín',
   Distance_SL: 'Távolság',
   Distance_Time_SL: 'Beírt útidő (ó)',
   radio_button: 'Szerepkör',
@@ -29,6 +28,7 @@ const KulsosMunkalapcolumnMapping = {
   ProjectNumber_SL: 'Projektszám',
   Worker_dropdown: 'Munkavégző',
   date: 'Munkavégzés dátuma',
+  Working_Place_SL: 'Helyszín',
   PV_dropdown: 'Projektvezető',
   PV_Leiras_ML: 'Projektvezető leírása'
 };
