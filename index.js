@@ -458,10 +458,7 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           id: 'Worker_dropdown',
           is_required: true,
           options: [
-            {
-              id: 'arpad.mendei@gmail.com',
-              label: 'Mendei Kft.',
-            },
+
             {
               id: 'sharaszti@elektrofox.hu',
               label: 'Elektrofox Kft.',
