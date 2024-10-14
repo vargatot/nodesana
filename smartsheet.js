@@ -26,7 +26,8 @@ const columnMapping = {
 
 const KulsosMunkalapcolumnMapping = {
   ProjectNumber_SL: 'Projektszám',
-  Worker_dropdown: 'Munkavégző',
+  WorkerName: 'Munkavégző', // Name goes to "Munkavégző" column
+  WorkerEmail: 'Munkavégző email', // Email goes to "Munkavégző email" column
   date: 'Munkavégzés dátuma',
   Working_Place_SL: 'Helyszín',
   PV_dropdown: 'Projektvezető',
@@ -112,21 +113,15 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
     const workspace = workspacesResponse.data.find(ws => ws.id == workspaceId);
     if (!workspace) throw new Error('Workspace not found');
 
-    console.log(`Found workspace: ${workspace.name}`);
-
-    // Get the details of the workspace to find the folder
+    // Get the folder
     const workspaceDetails = await smartsheetClient.workspaces.getWorkspace({ id: workspace.id });
     const folder = workspaceDetails.folders.find(f => f.name === folderName);
     if (!folder) throw new Error('Folder not found');
 
-    console.log(`Found folder: ${folder.name}`);
-
-    // Get the details of the folder to find the sheet
+    // Get the sheet
     const folderDetails = await smartsheetClient.folders.getFolder({ id: folder.id });
     const sheet = folderDetails.sheets.find(s => s.name === sheetName);
     if (!sheet) throw new Error('Sheet not found');
-
-    console.log(`Found sheet: ${sheet.name}`);
 
     // Get the columns of the sheet
     const sheetDetails = await smartsheetClient.sheets.getSheet({ id: sheet.id });
@@ -134,6 +129,8 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
       map[col.title] = col.id;
       return map;
     }, {});
+
+    // Prepare the row data for submission
     const row = {
       toBottom: true,
       cells: Object.keys(submittedData).map(key => {
@@ -147,7 +144,6 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
           value: submittedData[key]
         };
       })
-      
     };
 
     // Add the row to the sheet

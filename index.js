@@ -45,6 +45,19 @@ const workerEmailMapping = {
   'Varga-Tóth Ádám': 'vtadam@promir.hu', // Replace with the actual email
   // Add more workers here as needed
 };
+const KulsosWorkerEmailToNameMapping = {
+  'banyai.gabor@promir.hu': 'BG Kft.',
+  'sharaszti@elektrofox.hu': 'Elektrofox Kft.',
+  'fejes.delalfoldszolar@gmail.com': 'Dél-Alföld Szolár Kft.',
+  'lesliemiller.hu@gmail.com': 'Molnár László EV',
+  's.lajoslorant@gmail.com': 'Schmidt Lajos Lóránt EV',
+  'angyo.no1@gmail.com': 'Garai János EV',
+  'zsolt.deak@nexuselectro.hu': 'Nexus Electro Kft.',
+  'lantos.villszer@gmail.com': 'Lantos Tamás EV',
+  'sipos.zoltan@electricart.hu': 'TOSILA BT',
+  // Add more mappings as needed...
+};
+
 
 // Function to format date to YYYY-MM-DD
 function formatDate(date) {
@@ -666,7 +679,7 @@ app.post('/form/submit', async (req, res) => {
   }
 });
 app.post('/kulsosmunkalap/submit', async (req, res) => {
-  console.log('Kulsos munkalap Form submitted!');
+  console.log('Külsős munkalap Form submitted!');
   
   if (req.body.data) {
     try {
@@ -674,14 +687,20 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
         const parsedData = JSON.parse(req.body.data);
         submittedData = parsedData.values || {};
 
-        // Log the sheet list to console
-        
-        // Submit the data to Smartsheet
+        // Extract the worker's email from the dropdown
+        const workerEmail = submittedData.Worker_dropdown;
+
+        // Use the email to get the corresponding worker's name
+        const workerName = KulsosWorkerEmailToNameMapping[workerEmail] || 'Unknown Worker'; // Fallback if not found
+
+        // Add both the worker name and email to submittedData
+        submittedData.WorkerName = workerName;  // For "Munkavégző" column
+        submittedData.WorkerEmail = workerEmail; // For "Munkavégző email" column
+
+        // Proceed to submit the data to Smartsheet
         await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Összesített alvállalkozói munkalap', submittedData);
 
-     
-
-        // Send the response including the total kilometers
+        // Send the response
         res.json({ attachment_response });
       });
     } catch (error) {
@@ -693,6 +712,8 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
     res.json(attachment_response);
   }
 });
+
+
 const attachment_response = {
   resource_name: "I'm an Attachment",
   resource_url: 'https://nodesana.azurewebsites.net',
