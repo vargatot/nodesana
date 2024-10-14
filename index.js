@@ -680,18 +680,23 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
   if (req.body.data) {
     try {
       await submitQueue.add(async () => {
-        const parsedData = JSON.parse(req.body.data);
-        submittedData = parsedData.values || {};
+      const parsedData = JSON.parse(req.body.data);
+      submittedData = parsedData.values || {};
 
-        
+      // Extract task ID from the request body
+      const taskId = req.body.task || parsedData.task || parsedData.AsanaTaskName_SL;
 
+      // Get task details from Asana (project name and project number)
+      const taskDetails = await getTaskDetails(taskId);
 
-        // Add both the worker name and email to submittedData
-       
-        submittedData.WorkerName = KulsosWorkerEmailToNameMapping[submittedData.Worker_dropdown] || 'Unknown Worker'; // For "Munkavégző email" column
+      
+      submittedData.ProjectName_SL = taskDetails.projectName;      // Add project name
 
-        // Proceed to submit the data to Smartsheet
-        await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Összesített alvállalkozói munkalap', submittedData);
+      // Add both the worker name and email to submittedData
+      submittedData.WorkerName = KulsosWorkerEmailToNameMapping[submittedData.Worker_dropdown] || 'Unknown Worker'; // Map email to worker name
+
+      // Proceed to submit the data to Smartsheet
+      await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Összesített alvállalkozói munkalap', submittedData);
 
         // Send the response
         res.json({ attachment_response });

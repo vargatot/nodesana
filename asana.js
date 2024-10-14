@@ -14,7 +14,7 @@ let customFieldsApiInstance = new Asana.CustomFieldsApi();
 
 // Function to get task details from Asana
 async function getTaskDetails(taskId) {
-  let firstTaskID=taskId;
+  let firstTaskID = taskId;
   let opts = {
     'opt_fields': "name,projects,parent"
   };
@@ -30,7 +30,7 @@ async function getTaskDetails(taskId) {
     while (attempts < maxAttempts) {
       const result = await tasksApiInstance.getTask(taskId, opts);
       task = result.data;
-      console.log("Attempt:",attempts);
+      console.log("Attempt:", attempts);
       if (task.projects && task.projects.length > 0) {
         project = task.projects[0];
         break;
@@ -55,9 +55,9 @@ async function getTaskDetails(taskId) {
     const [projectNumber, projectTaskName] = projectName.includes(' - ') ? projectName.split(' - ') : [projectName, ''];
 
     return {
-      projectName: projectTaskName || projectName,
+      projectName: projectTaskName || projectName, // This is the actual project name (after splitting)
       projectId: projectId,
-      projectNumber: projectNumber,
+      projectNumber: projectNumber, // This is the project number (before the split)
       taskName: task.name,
       taskId: firstTaskID // Include the taskId here
     };

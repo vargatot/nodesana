@@ -27,6 +27,7 @@ const columnMapping = {
 const KulsosMunkalapcolumnMapping = {
   ProjectNumber_SL: 'Projektszám',
   WorkerName: 'Munkavégző', // Name goes to "Munkavégző" column
+  ProjectName_SL: 'Projektnév',
   Worker_dropdown: 'Munkavállaló email', // Email goes to "Munkavégző email" column
   date: 'Munkavégzés dátuma',
   Working_Place_SL: 'Helyszín',
@@ -108,43 +109,43 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
     }
   }else{
     try {
-    // Get the workspace
-    const workspacesResponse = await smartsheetClient.workspaces.listWorkspaces();
-    const workspace = workspacesResponse.data.find(ws => ws.id == workspaceId);
-    if (!workspace) throw new Error('Workspace not found');
+      const workspacesResponse = await smartsheetClient.workspaces.listWorkspaces();
+      const workspace = workspacesResponse.data.find(ws => ws.id == workspaceId);
+      if (!workspace) throw new Error('Workspace not found');
 
-    // Get the folder
-    const workspaceDetails = await smartsheetClient.workspaces.getWorkspace({ id: workspace.id });
-    const folder = workspaceDetails.folders.find(f => f.name === folderName);
-    if (!folder) throw new Error('Folder not found');
+      // Get the folder
+      const workspaceDetails = await smartsheetClient.workspaces.getWorkspace({ id: workspace.id });
+      const folder = workspaceDetails.folders.find(f => f.name === folderName);
+      if (!folder) throw new Error('Folder not found');
 
-    // Get the sheet
-    const folderDetails = await smartsheetClient.folders.getFolder({ id: folder.id });
-    const sheet = folderDetails.sheets.find(s => s.name === sheetName);
-    if (!sheet) throw new Error('Sheet not found');
+      // Get the sheet
+      const folderDetails = await smartsheetClient.folders.getFolder({ id: folder.id });
+      const sheet = folderDetails.sheets.find(s => s.name === sheetName);
+      if (!sheet) throw new Error('Sheet not found');
 
-    // Get the columns of the sheet
-    const sheetDetails = await smartsheetClient.sheets.getSheet({ id: sheet.id });
-    const columns = sheetDetails.columns.reduce((map, col) => {
-      map[col.title] = col.id;
-      return map;
-    }, {});
+      // Get the columns of the sheet
+      const sheetDetails = await smartsheetClient.sheets.getSheet({ id: sheet.id });
+      const columns = sheetDetails.columns.reduce((map, col) => {
+        map[col.title] = col.id;
+        return map;
+      }, {});
 
-    // Prepare the row data for submission
-    const row = {
-      toBottom: true,
-      cells: Object.keys(submittedData).map(key => {
-        const columnName = KulsosMunkalapcolumnMapping[key];
-        const columnId = columns[columnName];
-        if (!columnId) {
-          throw new Error(`Column ID for key ${key} not found`);
-        }
-        return {
-          columnId: columnId,
-          value: submittedData[key]
-        };
-      })
-    };
+      // Prepare the row data for submission
+      const row = {
+        toBottom: true,
+        cells: Object.keys(submittedData).map(key => {
+          const columnName = KulsosMunkalapcolumnMapping[key];  // Use the updated mapping
+          const columnId = columns[columnName];
+          if (!columnId) {
+            throw new Error(`Column ID for key ${key} not found`);
+          }
+          return {
+            columnId: columnId,
+            value: submittedData[key]
+          };
+        })
+      };
+
 
     // Add the row to the sheet
     await smartsheetClient.sheets.addRows({ sheetId: sheet.id, body: [row] });
