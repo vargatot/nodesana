@@ -140,10 +140,19 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
           if (!columnId) {
             throw new Error(`Column ID for key ${key} not found`);
           }
-          return {
-            columnId: columnId,
-            value: submittedData[key]
-          };
+      
+          // Handle formula submission for specific fields
+          if (key === 'rowid') {
+            return {
+              columnId: columnId,
+              formula: '=JOIN(MunkalapID@row)' // This will be treated as a formula in Smartsheet
+            };
+          } else {
+            return {
+              columnId: columnId,
+              value: submittedData[key] // Regular value submission
+            };
+          }
         })
       };
 
