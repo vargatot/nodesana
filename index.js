@@ -650,7 +650,7 @@ app.post('/form/submit', async (req, res) => {
         console.log(workerEmail);
    
         // Construct the Asana task link
-        submittedData.AsanaTaskLink = `https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId}`;
+        submittedData.AsanaTaskLink = https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId};
         console.log(submittedData.AsanaTaskLink);
         // Log the sheet list to console
       
@@ -661,7 +661,7 @@ app.post('/form/submit', async (req, res) => {
         const { filteredRows, totalKilometers } = await getRowsByTaskID(8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', taskDetails.taskId);
         const commentBody = {
           data: {
-            text: `Beírt kilométer: ${submittedData.Distance_SL}, összesen: ${totalKilometers}`
+            text: Beírt kilométer: ${submittedData.Distance_SL}, összesen: ${totalKilometers}
           }
         };
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
@@ -687,14 +687,11 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
         const parsedData = JSON.parse(req.body.data);
         submittedData = parsedData.values || {};
 
-        // Extract the worker's email from the dropdown
-        const workerEmail = submittedData.Worker_dropdown;
+        
 
-        // Use the email to get the corresponding worker's name
-        const workerName = KulsosWorkerEmailToNameMapping[workerEmail] || 'Unknown Worker'; // Fallback if not found
 
         // Add both the worker name and email to submittedData
-        submittedData.WorkerName = workerName;  // For "Munkavégző" column
+        submittedData.WorkerName = KulsosWorkerEmailToNameMapping[submittedData.Worker_dropdown] || 'Unknown Worker';  // For "Munkavégző" column
         submittedData.WorkerEmail = workerEmail; // For "Munkavégző email" column
 
         // Proceed to submit the data to Smartsheet
