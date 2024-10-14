@@ -659,11 +659,7 @@ app.post('/form/submit', async (req, res) => {
 
         // Read back the rows from the Smartsheet and calculate the total distance
         const { filteredRows, totalKilometers } = await getRowsByTaskID(8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', taskDetails.taskId);
-        const commentBody = {
-          data: {
-            text: Beírt kilométer: ${submittedData.Distance_SL}, összesen: ${totalKilometers}
-          }
-        };
+      
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
 
         // Send the response including the total kilometers
