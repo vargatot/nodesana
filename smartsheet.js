@@ -26,6 +26,7 @@ const columnMapping = {
 
 const KulsosMunkalapcolumnMapping = {
   ProjectNumber_SL: 'Projektszám',
+  rowid:'RowID',
   WorkerName: 'Munkavégző', // Name goes to "Munkavégző" column
   ProjectName_SL: 'Projektnév',
   Worker_dropdown: 'Munkavállaló email', // Email goes to "Munkavégző email" column

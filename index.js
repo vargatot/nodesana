@@ -689,7 +689,7 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
       // Get task details from Asana (project name and project number)
       const taskDetails = await getTaskDetails(taskId);
 
-      
+      submittedData.rowid='=JOIN(MunkalapID@row)';
       submittedData.ProjectName_SL = taskDetails.projectName;      // Add project name
 
       // Add both the worker name and email to submittedData
