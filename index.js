@@ -221,6 +221,10 @@ app.get('/form/metadata', async (req, res) => {
               label: 'Mendei Árpád',
             },
             {
+              id: 'Mikulás Roland',
+              label: 'Mikulás Roland',
+            },
+            {
               id: 'Palecska Gábor',
               label: 'Palecska Gábor',
             },
@@ -263,8 +267,8 @@ app.get('/form/metadata', async (req, res) => {
           is_required: true,
           options: [
             {
-              id: 'AEPD-619',
-              label: 'AEPD-619',
+              id: 'AEDP-619',
+              label: 'AEDP-619',
             },
             {
               id: 'AEEC-156',
