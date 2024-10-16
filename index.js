@@ -476,10 +476,6 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
           is_required: true,
           options: [
             {
-              id: 'banyai.gabor@promir.hu',
-              label: 'BG Kft.',
-            },
-            {
               id: 'sharaszti@elektrofox.hu',
               label: 'Elektrofox Kft.',
             },
