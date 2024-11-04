@@ -530,6 +530,10 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
               label: 'Deák Ádám',
             },
             {
+              id: 'mikulas.roland@promir.hu',
+              label: 'Mikulás Roland',
+            },
+            {
               id: 'palecska.gabor@promir.hu',
               label: 'Palecska Gábor',
             },
