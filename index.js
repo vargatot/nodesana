@@ -34,6 +34,7 @@ const workerEmailMapping = {
   'Deák Ádám': 'deak.adam@promir.hu', // Replace with the actual email
   'Keller Zoltán': 'keller.zoltan@promir.hu', // Replace with the actual email
   'Klein Antal': 'klein.antal@promir.hu', // Replace with the actual email
+  'Mikulás Roland': 'mikulas.roland@promir.hu', // Replace with the actual email
   'Mendei Árpád': 'mendei.arpad@promir.hu', // Replace with the actual email
   'Palecska Gábor': 'palecska.gabor@promir.hu', // Replace with the actual email
   'Sinka Balázs': 'sinka.balazs@promir.hu', // Replace with the actual email
@@ -282,7 +283,14 @@ app.get('/form/metadata', async (req, res) => {
               id: 'AELE-490',
               label: 'AELE-490',
             },
-            
+            {
+              id: 'AIHH-238',
+              label: 'AIHH-238',
+            },
+            {
+              id: 'AIHH-239',
+              label: 'AIHH-239',
+            },
             {
               id: 'MBN-927',
               label: 'MBN-927',
