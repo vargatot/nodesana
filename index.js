@@ -610,9 +610,7 @@ app.post('/search/attach', (req, res) => {
 
 app.post('/form/submit', async (req, res) => {
   console.log('Modal Form submitted!');
-  const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
-  const roleGid = await getEnumOptionGid(workspaceId, 'Szerepkör', submittedData.radio_button);
-  const plateGid = await getEnumOptionGid(workspaceId, 'Rendszám', submittedData.PlateNumber_dropdown);
+
   if (req.body.data) {
     try {
       await submitQueue.add(async () => {
@@ -655,6 +653,9 @@ app.post('/form/submit', async (req, res) => {
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
         console.log('SUBMITTED DATA:', submittedData);
         //  ÚJ ASANA TASK LÉTREHOZÁSA
+        const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
+        const roleGid = await getEnumOptionGid(workspaceId, 'Szerepkör', submittedData.radio_button);
+        const plateGid = await getEnumOptionGid(workspaceId, 'Rendszám', submittedData.PlateNumber_dropdown);
         try {
           const newTaskId = await createAsanaTask({
             name: workerName,
