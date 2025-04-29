@@ -673,8 +673,8 @@ app.post('/form/submit', async (req, res) => {
               'Kilométer': parseFloat(submittedData.Distance_SL),
               'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
               'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
-              'Szerepkör': submittedData.Role_dropdown,
-              'Rendszám': submittedData.LicensePlate_SL
+              'Szerepkör': submittedData.radio_button,
+              'Rendszám': submittedData.PlateNumber_dropdown
             }
           });
           console.log('Új Asana task létrehozva:', newTaskId);
