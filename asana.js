@@ -148,7 +148,7 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
   try {
     // Lekérjük a projekthez tartozó custom field ID-ket
     const projectCustomFields = await getCustomFieldsForProject(projectId);
-
+    console.log('projectCustomFields:', projectCustomFields);
     const customFieldIdMap = {};
     for (const fieldSetting of projectCustomFields) {
       const fieldName = fieldSetting.custom_field.name;
