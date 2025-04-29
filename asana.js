@@ -142,11 +142,56 @@ async function updateCustomField(taskId, projectId, totalKilometers) {
   }
 }
 
+
+// Új Asana task létrehozása mezőnevekkel
+async function createAsanaTask({ assignee, name, dueDate, projectId, customFields }) {
+  try {
+    // Lekérjük a projekthez tartozó custom field ID-ket
+    const projectCustomFields = await getCustomFieldsForProject(projectId);
+
+    const customFieldIdMap = {};
+    for (const fieldSetting of projectCustomFields) {
+      const fieldName = fieldSetting.custom_field.name;
+      customFieldIdMap[fieldName] = fieldSetting.custom_field.gid;
+    }
+
+    // Felépítjük a custom_fields objektumot ID-k alapján
+    const customFieldsPayload = {};
+    for (const [fieldName, value] of Object.entries(customFields)) {
+      const fieldId = customFieldIdMap[fieldName];
+      if (fieldId) {
+        customFieldsPayload[fieldId] = value;
+      } else {
+        console.warn(`Custom field '${fieldName}' nem található a projektben.`);
+      }
+    }
+
+    const taskData = {
+      data: {
+        name: name,
+        assignee: assignee,
+        due_on: dueDate,
+        projects: [projectId],
+        custom_fields: customFieldsPayload
+      }
+    };
+
+    const result = await tasksApiInstance.createTask(taskData);
+    return result.data.gid;
+  } catch (error) {
+    console.error('Hiba az Asana task létrehozásakor:', error.message);
+    throw error;
+  }
+}
+
+
+
 module.exports = {
   getTaskDetails,
   getUserDetails,
   getCustomFieldsForProject,
   updateCustomField,
   getCustomFieldIdByName,
+  createAsanaTask,
   storiesApiInstance
 };
