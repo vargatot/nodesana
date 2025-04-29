@@ -539,8 +539,8 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
               label: 'Deák Ádám',
             },
             {
-              id: 'mikulas.roland@promir.hu',
-              label: 'Mikulás Roland',
+              id: 'sellei.adam@promir.hu',
+              label: 'Séllei Ádám',
             },
             {
               id: 'palecska.gabor@promir.hu',
@@ -673,7 +673,8 @@ app.post('/form/submit', async (req, res) => {
               'Kilométer': parseFloat(submittedData.Distance_SL),
               'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
               'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
-              'Szerepkör': submittedData.radio_button,
+              //'Szerepkör': submittedData.radio_button,
+              'due_on': submittedData.date,
               'Rendszám': submittedData.PlateNumber_dropdown
             }
           });
