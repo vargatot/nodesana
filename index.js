@@ -659,7 +659,7 @@ app.post('/form/submit', async (req, res) => {
         );
 
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
-
+        console.log('SUBMITTED DATA:', submittedData);
         //  ÚJ ASANA TASK LÉTREHOZÁSA
         try {
           const newTaskId = await createAsanaTask({

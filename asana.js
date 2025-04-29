@@ -94,14 +94,14 @@ async function getCustomFieldsForProject(projectId) {
     'limit': 50, 
     'opt_fields': "custom_field,custom_field.name,custom_field.type"
   };
-  console.log(projectId);
-  console.log("-------------1");
+
+  
   try {
     const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
 
 
-    console.log(result.data);
-    console.log("-------------2");
+
+   
     return result.data;
   } catch (error) {
     console.error('Error fetching custom fields for project:', error.message);
@@ -126,10 +126,10 @@ async function updateCustomField(taskId, projectId, totalKilometers) {
   try {
     // Get the custom field ID by name
     const customFieldGid = await getCustomFieldIdByName(projectId, 'Kilométer');
-    console.log([customFieldGid]);
+
     let body = {"data":{"custom_fields":{[customFieldGid] : totalKilometers.toString()}}}; // Object | The task to update.
     console.log("-----");
-    console.log(body);
+ 
     let opts = {};
     tasksApiInstance.updateTask(body, taskId, opts).then((result) => {
         console.log('API called successfully.');
