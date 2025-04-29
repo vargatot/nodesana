@@ -31,11 +31,10 @@ app.use((req, res, next) => {
 const workerEmailMapping = {
   'Bányai Gábor': 'banyai.gabor@promir.hu', // Replace with the actual email
   'Bozóki Róbert': 'bozoki.robert@promir.hu', // Replace with the actual email
-  'Bondár Balázs': 'bondar.balazs@promir.hu', // Replace with the actual email
   'Deák Ádám': 'deak.adam@promir.hu', // Replace with the actual email
   'Keller Zoltán': 'keller.zoltan@promir.hu', // Replace with the actual email
   'Klein Antal': 'klein.antal@promir.hu', // Replace with the actual email
-  'Mikulás Roland': 'mikulas.roland@promir.hu', // Replace with the actual email
+  'Séllei Ádám': 'sellei.adam@promir.hu', // Replace with the actual email
   'Mendei Árpád': 'mendei.arpad@promir.hu', // Replace with the actual email
   'Palecska Gábor': 'palecska.gabor@promir.hu', // Replace with the actual email
   'Sinka Balázs': 'sinka.balazs@promir.hu', // Replace with the actual email
@@ -203,10 +202,6 @@ app.get('/form/metadata', async (req, res) => {
               label: 'Bozóki Róbert',
             },
             {
-              id: 'Bondár Balázs',
-              label: 'Bondár Balázs',
-            },
-            {
               id: 'Deák Ádám',
               label: 'Deák Ádám',
             },
@@ -223,8 +218,8 @@ app.get('/form/metadata', async (req, res) => {
               label: 'Mendei Árpád',
             },
             {
-              id: 'Mikulás Roland',
-              label: 'Mikulás Roland',
+              id: 'Séllei Dádám',
+              label: 'Séllei Dádám',
             },
             {
               id: 'Palecska Gábor',
@@ -530,10 +525,7 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
               id: 'bozoki.robert@promir.hu',
               label: 'Bozóki Róbert',
             },
-            {
-              id: 'bondar.balazs@promir.hu',
-              label: 'Bondár Balázs',
-            },
+
             {
               id: 'deak.adam@promir.hu',
               label: 'Deák Ádám',
@@ -618,7 +610,9 @@ app.post('/search/attach', (req, res) => {
 
 app.post('/form/submit', async (req, res) => {
   console.log('Modal Form submitted!');
-
+  const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
+  const roleGid = await getEnumOptionGid(workspaceId, 'Szerepkör', submittedData.radio_button);
+  const plateGid = await getEnumOptionGid(workspaceId, 'Rendszám', submittedData.PlateNumber_dropdown);
   if (req.body.data) {
     try {
       await submitQueue.add(async () => {
@@ -663,19 +657,18 @@ app.post('/form/submit', async (req, res) => {
         //  ÚJ ASANA TASK LÉTREHOZÁSA
         try {
           const newTaskId = await createAsanaTask({
-            //assignee: workerEmail, // Assignee mező
-            name: workerName, // Name mező
-            dueDate: submittedData.Date_SL, // "Due date" mező
-            projectId: '1210076978597830', // Asana projekt ID
+            name: workerName,
+            dueDate: submittedData.Date_SL,
+            projectId: '1210076978597830',
             customFields: {
               'Projektszám': taskDetails.projectNumber,
               'Projektnév': taskDetails.projectName,
               'Kilométer': parseFloat(submittedData.Distance_SL),
               'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
-              'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
-             // 'Szerepkör': submittedData.radio_button,
+              'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70,
+              'Szerepkör': roleGid,
               'Kiszállás Dátuma': submittedData.date,
-              'Rendszám': submittedData.PlateNumber_dropdown
+              'Rendszám': plateGid
             }
           });
           console.log('Új Asana task létrehozva:', newTaskId);
@@ -731,6 +724,33 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
     res.json(attachment_response);
   }
 });
+const asana = require('asana');
+
+const client = asana.Client.create().useAccessToken(process.env.ASANA_ACCESS_TOKEN);
+
+// Lekéri a megadott nevű mező enum opciói közül a keresett opció `gid` értékét
+async function getEnumOptionGid(workspaceId, fieldName, optionName) {
+  try {
+    const fields = await client.customFields.getCustomFieldsForWorkspace(workspaceId, { opt_fields: 'name,type,enum_options' });
+
+    const field = fields.data.find(f => f.name === fieldName && f.type === 'enum');
+    if (!field) {
+      console.warn(`Mező nem található vagy nem enum típusú: ${fieldName}`);
+      return null;
+    }
+
+    const option = field.enum_options.find(opt => opt.name === optionName);
+    if (!option) {
+      console.warn(`Enum opció nem található: ${optionName} a mezőn belül: ${fieldName}`);
+      return null;
+    }
+
+    return option.gid;
+  } catch (error) {
+    console.error(`Hiba az enum GID lekérésekor (${fieldName} - ${optionName}):`, error.message);
+    return null;
+  }
+}
 
 
 const attachment_response = {
