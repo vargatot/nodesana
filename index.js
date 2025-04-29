@@ -724,33 +724,9 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
     res.json(attachment_response);
   }
 });
-const asana = require('asana');
-
-const client = asana.Client.create().useAccessToken(process.env.ASANA_ACCESS_TOKEN);
 
 // Lekéri a megadott nevű mező enum opciói közül a keresett opció `gid` értékét
-async function getEnumOptionGid(workspaceId, fieldName, optionName) {
-  try {
-    const fields = await client.customFields.getCustomFieldsForWorkspace(workspaceId, { opt_fields: 'name,type,enum_options' });
 
-    const field = fields.data.find(f => f.name === fieldName && f.type === 'enum');
-    if (!field) {
-      console.warn(`Mező nem található vagy nem enum típusú: ${fieldName}`);
-      return null;
-    }
-
-    const option = field.enum_options.find(opt => opt.name === optionName);
-    if (!option) {
-      console.warn(`Enum opció nem található: ${optionName} a mezőn belül: ${fieldName}`);
-      return null;
-    }
-
-    return option.gid;
-  } catch (error) {
-    console.error(`Hiba az enum GID lekérésekor (${fieldName} - ${optionName}):`, error.message);
-    return null;
-  }
-}
 
 
 const attachment_response = {

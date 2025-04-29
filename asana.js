@@ -184,7 +184,28 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
   }
 }
 
+async function getEnumOptionGid(workspaceId, fieldName, optionName) {
+  try {
+    const fields = await client.customFields.getCustomFieldsForWorkspace(workspaceId, { opt_fields: 'name,type,enum_options' });
 
+    const field = fields.data.find(f => f.name === fieldName && f.type === 'enum');
+    if (!field) {
+      console.warn(`Mező nem található vagy nem enum típusú: ${fieldName}`);
+      return null;
+    }
+
+    const option = field.enum_options.find(opt => opt.name === optionName);
+    if (!option) {
+      console.warn(`Enum opció nem található: ${optionName} a mezőn belül: ${fieldName}`);
+      return null;
+    }
+
+    return option.gid;
+  } catch (error) {
+    console.error(`Hiba az enum GID lekérésekor (${fieldName} - ${optionName}):`, error.message);
+    return null;
+  }
+}
 
 module.exports = {
   getTaskDetails,
@@ -193,5 +214,6 @@ module.exports = {
   updateCustomField,
   getCustomFieldIdByName,
   createAsanaTask,
+  getEnumOptionGid,
   storiesApiInstance
 };
