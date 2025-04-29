@@ -666,7 +666,7 @@ app.post('/form/submit', async (req, res) => {
             assignee: workerEmail, // Assignee mező
             name: workerName, // Name mező
             dueDate: submittedData.Date_SL, // "Due date" mező
-            projectId: taskDetails.projectId, // Asana projekt ID
+            projectId: 1210076978597830, // Asana projekt ID
             customFields: {
               'Projektszám': taskDetails.projectNumber,
               'Projektnév': taskDetails.projectName,
