@@ -612,7 +612,7 @@ app.post('/search/attach', (req, res) => {
 app.post('/form/submit', async (req, res) => {
   console.log('Modal Form submitted!');
   const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
-
+  
   if (req.body.data) {
     try {
       await submitQueue.add(async () => {
@@ -651,7 +651,7 @@ app.post('/form/submit', async (req, res) => {
         const { filteredRows, totalKilometers } = await getRowsByTaskID(
           8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', taskDetails.taskId
         );
-        const KiszallasProjektID='1210076978597830';
+        
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
         console.log('SUBMITTED DATA:', submittedData);
         //  ÚJ ASANA TASK LÉTREHOZÁSA
@@ -660,7 +660,7 @@ app.post('/form/submit', async (req, res) => {
             
             name: workerName, // Name mező
             dueDate: submittedData.Date_SL, // "Due date" mező
-            projectId: KiszallasProjektID, // Asana projekt ID
+            projectId: '1210076978597830', // Asana projekt ID
             customFields: {
               'Projektszám': taskDetails.projectNumber,
               'Projektnév': taskDetails.projectName,
@@ -682,10 +682,10 @@ app.post('/form/submit', async (req, res) => {
         res.json({ attachment_response, totalKilometers });
       });
       try {
-          const szerepkorValueGid = await getEnumOptionGid(KiszallasProjektID, 'Szerepkör', submittedData.radio_button);
-          await updateAsanaCustomField(newTaskId, KiszallasProjektID, 'Szerepkör', szerepkorValueGid);
-          const RendszamValueGid = await getEnumOptionGid(KiszallasProjektID, 'Rendszám', submittedData.PlateNumber_dropdown);
-          await updateAsanaCustomField(newTaskId, KiszallasProjektID, 'Rendszám', RendszamValueGid);
+          const szerepkorValueGid = await getEnumOptionGid('1210076978597830', 'Szerepkör', submittedData.radio_button);
+          await updateAsanaCustomField(newTaskId, '1210076978597830', 'Szerepkör', szerepkorValueGid);
+          const RendszamValueGid = await getEnumOptionGid('1210076978597830', 'Rendszám', submittedData.PlateNumber_dropdown);
+          await updateAsanaCustomField(newTaskId, '1210076978597830', 'Rendszám', RendszamValueGid);
           console.log('Új Asana task módosítva:', newTaskId);
           } catch (asanaError) {
             console.error('Nem sikerült új Asana taskot módosítani:', asanaError.message);
