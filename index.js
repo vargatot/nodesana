@@ -653,7 +653,7 @@ app.post('/form/submit', async (req, res) => {
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
         console.log('SUBMITTED DATA:', submittedData);
         
-        //  ÚJ ASANA TASK LÉTREHOZÁSA
+        // ÚJ ASANA TASK LÉTREHOZÁSA
         const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
         const roleGid = await getEnumOptionGidFromProject('1210076978597830', 'Szerepkör', submittedData.radio_button);
         const plateGid = await getEnumOptionGidFromProject('1210076978597830', 'Rendszám', submittedData.PlateNumber_dropdown);
