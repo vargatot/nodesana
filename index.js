@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { submitDataToSheet, getRowsByTaskID } = require('./smartsheet');
-const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,updateEnumFields } = require('./asana');
+const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,updateSzerepkorField } = require('./asana');
 const app = express();
 const port = process.env.PORT || 8000;
 let submittedData = {};
@@ -653,7 +653,7 @@ app.post('/form/submit', async (req, res) => {
         );
         
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
-        console.log('SUBMITTED DATA:', submittedData);
+        //console.log('SUBMITTED DATA:', submittedData);
         //  ÚJ ASANA TASK LÉTREHOZÁSA
         try {
           const newTaskId = await createAsanaTask({
@@ -673,28 +673,23 @@ app.post('/form/submit', async (req, res) => {
               
             }
           });
+          
           console.log('Új Asana task létrehozva:', newTaskId);
+          await updateSzerepkorField(newTaskId, submittedData.radio_button);
         } catch (asanaError) {
           console.error('Nem sikerült új Asana taskot létrehozni:', asanaError.message);
         }
 
         // Válasz küldése
         res.json({ attachment_response, totalKilometers });
+      
+
+          
+
+
+          
       });
-      try {
-          const szerepkorGid = await getCustomFieldIdByName('1210076978597830', 'Szerepkör');
-          console.log('szerepkorGid:', szerepkorGid);
-          const rendszamGid = await getCustomFieldIdByName('1210076978597830', 'Rendszám');
-          console.log('rendszamGid:', rendszamGid);
-
-
-          await updateEnumFields(newTaskId, '1210076978597830', szerepkorGid, submittedData.radio_button, rendszamGid, submittedData.PlateNumber_dropdown);
-
-
-          console.log('Új Asana task módosítva:', newTaskId);
-          } catch (asanaError) {
-            console.error('Nem sikerült új Asana taskot módosítani:', asanaError.message);
-          }
+      
     } catch (error) {
       console.log('Error parsing data:', error);
       res.status(500).send('Error submitting data to Smartsheet');
