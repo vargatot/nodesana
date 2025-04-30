@@ -669,8 +669,7 @@ app.post('/form/submit', async (req, res) => {
               'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
               //'Szerepkör': submittedData.radio_button,
               //'Rendszám': submittedData.PlateNumber_dropdown,
-              //'Kiszállás Dátuma': submittedData.date
-              
+              'Kiszállás Dátuma': submittedData.date
             }
           });
           
