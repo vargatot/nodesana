@@ -95,13 +95,14 @@ async function getCustomFieldsForProject(projectId) {
     'opt_fields': "custom_field,custom_field.name,custom_field.type"
   };
 
-  
   try {
     const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
 
+    if (!result || !Array.isArray(result.data)) {
+      console.error('Hibás válasz a getCustomFieldsForProject hívásból:', result);
+      return [];
+    }
 
-
-   
     return result.data;
   } catch (error) {
     console.error('Error fetching custom fields for project:', error.message);
@@ -188,6 +189,10 @@ async function updateAsanaCustomField(taskId, projectId, fieldName, newValue) {
   try {
     // Lekérjük a projekthez tartozó custom field ID-ket
     const projectCustomFields = await getCustomFieldsForProject(projectId);
+    if (!projectCustomFields || !Array.isArray(projectCustomFields)) {
+      console.error(`Nem sikerült lekérni a custom field-eket a '${fieldName}' frissítéséhez.`);
+      return;
+    }
     const fieldSetting = projectCustomFields.find(f => f.custom_field.name === fieldName);
 
     if (!fieldSetting) {
@@ -228,6 +233,10 @@ async function updateAsanaCustomField(taskId, projectId, fieldName, newValue) {
 }
 async function getEnumOptionGid(projectId, fieldName, optionName) {
   const projectCustomFields = await getCustomFieldsForProject(projectId);
+  if (!projectCustomFields || !Array.isArray(projectCustomFields)) {
+    console.error(`Nem sikerült lekérni a custom field-eket a(z) ${projectId} projektből.`);
+    return null;
+  }
   const fieldSetting = projectCustomFields.find(f => f.custom_field.name === fieldName);
 
   if (!fieldSetting) {
