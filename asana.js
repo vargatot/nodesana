@@ -216,7 +216,7 @@ async function updateRendszamField(taskId, rendszamNev) {
     };
 
     // Enum típusú custom field GID-je (Rendszám mező)
-    const rendszamFieldGid = "1201393200898702"; // ezt cseréld ki a valódi GID-re, ha más
+    const rendszamFieldGid = "1201830409216170"; // ezt cseréld ki a valódi GID-re, ha más
 
     const rendszamEnumGid = rendszamValueMap[rendszamNev];
     if (!rendszamEnumGid) {
