@@ -682,10 +682,6 @@ app.post('/form/submit', async (req, res) => {
 
         // Válasz küldése
         res.json({ attachment_response, totalKilometers });
-      
-
-          
-
 
           
       });

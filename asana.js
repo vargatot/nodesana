@@ -94,27 +94,25 @@ async function getCustomFieldsForProject(projectId) {
     'limit': 50, 
     'opt_fields': "custom_field,custom_field.name,custom_field.type"
   };
-
+  console.log(projectId);
+  console.log("-------------1");
   try {
     const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
-    console.log('getCustomFieldSettingsForProject:', result);
-    // Ellenőrzés és logolás
-    if (!result || !Array.isArray(result.data)) {
-      console.error('Hibás vagy üres válasz a getCustomFieldsForProject hívásból:', result);
-      return [];
-    }
 
-    return result.data.data;
+
+  
+    console.log("-------------2");
+    return result.data;
   } catch (error) {
-    console.error('Hiba a mezők lekérdezésekor:', error.message);
+    console.error('Error fetching custom fields for project:', error.message);
     throw error;
   }
 }
 
-
 // Function to get the custom field ID by name
 async function getCustomFieldIdByName(projectId, fieldName) {
   try {
+    console.log("-------------3");
     const customFields = await getCustomFieldsForProject(projectId);
     const customField = customFields.find(field => field.custom_field.name === fieldName);
     return customField ? customField.custom_field.gid : null;
@@ -128,11 +126,13 @@ async function getCustomFieldIdByName(projectId, fieldName) {
 async function updateCustomField(taskId, projectId, totalKilometers) {
   try {
     // Get the custom field ID by name
-    const customFieldGid = await getCustomFieldIdByName(projectId, 'Kilométer');
 
+    const customFieldGid = await getCustomFieldIdByName(projectId, 'Kilométer');
+    console.log("-------------4");
+    console.log([customFieldGid]);
     let body = {"data":{"custom_fields":{[customFieldGid] : totalKilometers.toString()}}}; // Object | The task to update.
     console.log("-----");
- 
+    console.log(body);
     let opts = {};
     tasksApiInstance.updateTask(body, taskId, opts).then((result) => {
         console.log('API called successfully.');
@@ -144,6 +144,7 @@ async function updateCustomField(taskId, projectId, totalKilometers) {
     throw error;
   }
 }
+
 
 
 // Új Asana task létrehozása mezőnevekkel
