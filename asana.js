@@ -104,7 +104,7 @@ async function getCustomFieldsForProject(projectId) {
       return [];
     }
 
-    return result.data;
+    return result.data.data;
   } catch (error) {
     console.error('Hiba a mezők lekérdezésekor:', error.message);
     throw error;
