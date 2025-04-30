@@ -97,18 +97,20 @@ async function getCustomFieldsForProject(projectId) {
 
   try {
     const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
-
+    console.log('getCustomFieldSettingsForProject:', result);
+    // Ellenőrzés és logolás
     if (!result || !Array.isArray(result.data)) {
-      console.error('Hibás válasz a getCustomFieldsForProject hívásból:', result);
+      console.error('Hibás vagy üres válasz a getCustomFieldsForProject hívásból:', result);
       return [];
     }
 
     return result.data;
   } catch (error) {
-    console.error('Error fetching custom fields for project:', error.message);
+    console.error('Hiba a mezők lekérdezésekor:', error.message);
     throw error;
   }
 }
+
 
 // Function to get the custom field ID by name
 async function getCustomFieldIdByName(projectId, fieldName) {
@@ -189,6 +191,7 @@ async function updateAsanaCustomField(taskId, projectId, fieldName, newValue) {
   try {
     // Lekérjük a projekthez tartozó custom field ID-ket
     const projectCustomFields = await getCustomFieldsForProject(projectId);
+    console.log('updateAsanaCustomField projectCustomFields:', projectCustomFields);
     if (!projectCustomFields || !Array.isArray(projectCustomFields)) {
       console.error(`Nem sikerült lekérni a custom field-eket a '${fieldName}' frissítéséhez.`);
       return;
