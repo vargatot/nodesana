@@ -676,7 +676,7 @@ app.post('/form/submit', async (req, res) => {
           
           console.log('Új Asana task létrehozva:', newTaskId);
           await updateSzerepkorField(newTaskId, submittedData.radio_button);
-          await updateRendszamField(newTaskId, submittedData.radio_button);
+          await updateRendszamField(newTaskId, submittedData.PlateNumber_dropdown);
 
         } catch (asanaError) {
           console.error('Nem sikerült új Asana taskot létrehozni:', asanaError.message);
