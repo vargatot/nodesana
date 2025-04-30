@@ -187,7 +187,58 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     throw error;
   }
 }
+async function updateRendszamField(taskId, rendszamNev) {
+  try {
+    // Enum értékek GID-jei rendszámokhoz (ne bővüljön dinamikusan, fix GID-ek!)
+    const rendszamValueMap = {
+      "RMZ-496": "1201830409216206",
+      "PSG-690": "1201830409218223",
+      "AEDP-619": "1210109192980863",
+      "AEEC-156": "1210109192980864",
+      "AEDH-132": "1210109192980865",
+      "AELE-490": "1210109192980866",
+      "AIHH-238": "1210109192980867",
+      "AIHH-239": "1210109192980868",
+      "MBN-927": "1210109192980869",
+      "MTF-396": "1210109192980870",
+      "NEK-593": "1210109192980871",
+      "NYP-188": "1210109192980872",
+      "PWF-261": "1210109192980873",
+      "RSJ-356": "1210109192980874",
+      "SDS-109": "1210109192980875",
+      "SKV-930": "1210109192980876",
+      "TFG-467": "1210109192980877",
+      "TGK-267": "1210109192980878",
+      "LWF-099": "1210109192980879",
+      "MVU-936": "1210109192980880",
+      "GÉPKOCSI": "1210109192980881",
+      "UTAS": "1210109192980882"
+    };
 
+    // Enum típusú custom field GID-je (Rendszám mező)
+    const rendszamFieldGid = "1201393200898702"; // ezt cseréld ki a valódi GID-re, ha más
+
+    const rendszamEnumGid = rendszamValueMap[rendszamNev];
+    if (!rendszamEnumGid) {
+      throw new Error(`Ismeretlen rendszám: ${rendszamNev}`);
+    }
+
+    const body = {
+      data: {
+        custom_fields: {
+          [rendszamFieldGid]: rendszamEnumGid
+        }
+      }
+    };
+
+    const opts = {};
+    await tasksApiInstance.updateTask(body, taskId, opts);
+    console.log(`Rendszám frissítve: ${rendszamNev} (${rendszamEnumGid})`);
+  } catch (error) {
+    console.error('Hiba a Rendszám mező frissítésekor:', error.message);
+    throw error;
+  }
+}
 async function updateSzerepkorField(taskId, szerepkorNev) {
   try {
     // Enum value GID-ek szerepkörökhöz (ne bővüljön dinamikusan, fix GID-ek!)
@@ -237,5 +288,6 @@ module.exports = {
   getCustomFieldIdByName,
   createAsanaTask,
   updateSzerepkorField,
+  updateRendszamField,
   storiesApiInstance
 };
