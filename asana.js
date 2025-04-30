@@ -151,7 +151,7 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
   try {
     // Lekérjük a projekthez tartozó custom field ID-ket
     const projectCustomFields = await getCustomFieldsForProject(projectId);
-    
+    console.log('projectCustomFields:', projectCustomFields);
     const customFieldIdMap = {};
     for (const fieldSetting of projectCustomFields) {
       const fieldName = fieldSetting.custom_field.name;
@@ -168,44 +168,7 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
         console.warn(`Custom field '${fieldName}' nem található a projektben.`);
       }
     }
-    async function updateSzerepkorField(taskId, szerepkorNev) {
-      try {
-        console.log('szerepkorNev:', szerepkorNev);
-        // Enum value GID-ek szerepkörökhöz (ne bővüljön dinamikusan, fix GID-ek!)
-        const szerepkorValueMap = {
-          "PM": "1201389865826248",
-          "CRM": "1201575450481275",
-          "Beszerzés": "1201389865835646",
-          "Tervezés": "1201389865836701",
-          "Programozás": "1201389865836736",
-          "Szerelés": "1201389865838878"
-        };
-    
-        // Enum típusú custom field GID-je (Szerepkör mező)
-        const szerepkorFieldGid = "1201389865824185";
-    
-        const szerepkorEnumGid = szerepkorValueMap[szerepkorNev];
-        if (!szerepkorEnumGid) {
-          throw new Error(`Ismeretlen szerepkör: ${szerepkorNev}`);
-        }
-    
-        const body = {
-          data: {
-            custom_fields: {
-              [szerepkorFieldGid]: szerepkorEnumGid
-            }
-          }
-        };
-    
-        const opts = {};
-        await tasksApiInstance.updateTask(body, taskId, opts);
-        console.log(`Szerepkör frissítve: ${szerepkorNev} (${szerepkorEnumGid})`);
-      } catch (error) {
-        console.error('Hiba a Szerepkör mező frissítésekor:', error.message);
-        throw error;
-      }
-    }
-    
+
     const taskData = {
       data: {
         name: name,
@@ -224,16 +187,45 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
   }
 }
 
-async function getCustomFieldDetails(customFieldGid) {
+async function updateSzerepkorField(taskId, szerepkorNev) {
   try {
-    const response = await customFieldsApiInstance.getCustomField(customFieldGid, { opt_fields: 'enum_options' });
+    // Enum value GID-ek szerepkörökhöz (ne bővüljön dinamikusan, fix GID-ek!)
+    const szerepkorValueMap = {
+      "PM": "1201389865826248",
+      "CRM": "1201575450481275",
+      "Beszerzés": "1201389865835646",
+      "Tervezés": "1201389865836701",
+      "Programozás": "1201389865836736",
+      "Szerelés": "1201389865838878"
+    };
 
-    return response.data;
+    // Enum típusú custom field GID-je (Szerepkör mező)
+    const szerepkorFieldGid = "1201389865824185";
+
+    const szerepkorEnumGid = szerepkorValueMap[szerepkorNev];
+    if (!szerepkorEnumGid) {
+      throw new Error(`Ismeretlen szerepkör: ${szerepkorNev}`);
+    }
+
+    const body = {
+      data: {
+        custom_fields: {
+          [szerepkorFieldGid]: szerepkorEnumGid
+        }
+      }
+    };
+
+    const opts = {};
+
+    //tasksApiInstance.updateTask(body, taskId, opts).then((result) => {
+    await tasksApiInstance.updateTask(body, taskId, opts);
+    console.log(`Szerepkör frissítve: ${szerepkorNev} (${szerepkorEnumGid})`);
   } catch (error) {
-    console.error(`Hiba a ${customFieldGid} részleteinek lekérésekor:`, error.message);
+    console.error('Hiba a Szerepkör mező frissítésekor:', error.message);
     throw error;
   }
 }
+
 
 
 module.exports = {
