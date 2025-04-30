@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { submitDataToSheet, getRowsByTaskID } = require('./smartsheet');
-const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask  } = require('./asana');
+const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,updateAsanaCustomField  } = require('./asana');
 const app = express();
 const port = process.env.PORT || 8000;
 let submittedData = {};
@@ -651,7 +651,7 @@ app.post('/form/submit', async (req, res) => {
         const { filteredRows, totalKilometers } = await getRowsByTaskID(
           8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', taskDetails.taskId
         );
-
+        const KiszallasProjektID='1210076978597830';
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
         console.log('SUBMITTED DATA:', submittedData);
         //  ÚJ ASANA TASK LÉTREHOZÁSA
@@ -660,7 +660,7 @@ app.post('/form/submit', async (req, res) => {
             
             name: workerName, // Name mező
             dueDate: submittedData.Date_SL, // "Due date" mező
-            projectId: '1210076978597830', // Asana projekt ID
+            projectId: KiszallasProjektID, // Asana projekt ID
             customFields: {
               'Projektszám': taskDetails.projectNumber,
               'Projektnév': taskDetails.projectName,
@@ -681,6 +681,15 @@ app.post('/form/submit', async (req, res) => {
         // Válasz küldése
         res.json({ attachment_response, totalKilometers });
       });
+      try {
+          const szerepkorValueGid = await getEnumOptionGid(KiszallasProjektID, 'Szerepkör', submittedData.radio_button);
+          await updateAsanaCustomField(newTaskId, KiszallasProjektID, 'Szerepkör', szerepkorValueGid);
+          const RendszamValueGid = await getEnumOptionGid(KiszallasProjektID, 'Rendszám', submittedData.PlateNumber_dropdown);
+          await updateAsanaCustomField(newTaskId, KiszallasProjektID, 'Rendszám', RendszamValueGid);
+          console.log('Új Asana task módosítva:', newTaskId);
+          } catch (asanaError) {
+            console.error('Nem sikerült új Asana taskot módosítani:', asanaError.message);
+          }
     } catch (error) {
       console.log('Error parsing data:', error);
       res.status(500).send('Error submitting data to Smartsheet');

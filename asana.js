@@ -184,7 +184,67 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
   }
 }
 
+async function updateAsanaCustomField(taskId, projectId, fieldName, newValue) {
+  try {
+    // Lekérjük a projekthez tartozó custom field ID-ket
+    const projectCustomFields = await getCustomFieldsForProject(projectId);
+    const fieldSetting = projectCustomFields.find(f => f.custom_field.name === fieldName);
 
+    if (!fieldSetting) {
+      console.warn(`Custom field '${fieldName}' nem található a projektben.`);
+      return;
+    }
+
+    const fieldId = fieldSetting.custom_field.gid;
+
+    const url = `https://app.asana.com/api/1.0/tasks/${taskId}`;
+    const payload = {
+      data: {
+        custom_fields: {
+          [fieldId]: newValue
+        }
+      }
+    };
+
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${ASANA_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Asana API error: ${response.status} - ${errorText}`);
+    }
+
+    console.log(`Custom field '${fieldName}' frissítve.`);
+  } catch (error) {
+    console.error(`Hiba a '${fieldName}' frissítésekor:`, error.message);
+    throw error;
+  }
+}
+async function getEnumOptionGid(projectId, fieldName, optionName) {
+  const projectCustomFields = await getCustomFieldsForProject(projectId);
+  const fieldSetting = projectCustomFields.find(f => f.custom_field.name === fieldName);
+
+  if (!fieldSetting) {
+    console.warn(`Custom field '${fieldName}' nem található a projektben.`);
+    return null;
+  }
+
+  const enumOptions = fieldSetting.custom_field.enum_options;
+  const option = enumOptions.find(opt => opt.name === optionName);
+
+  if (!option) {
+    console.warn(`Option '${optionName}' nem található a '${fieldName}' mezőben.`);
+    return null;
+  }
+
+  return option.gid;
+}
 
 module.exports = {
   getTaskDetails,
@@ -193,5 +253,7 @@ module.exports = {
   updateCustomField,
   getCustomFieldIdByName,
   createAsanaTask,
+  updateAsanaCustomField,
+  getEnumOptionGid,
   storiesApiInstance
 };
