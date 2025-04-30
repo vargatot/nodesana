@@ -649,28 +649,29 @@ app.post('/form/submit', async (req, res) => {
         const { filteredRows, totalKilometers } = await getRowsByTaskID(
           8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', taskDetails.taskId
         );
-
+        
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
         console.log('SUBMITTED DATA:', submittedData);
+        
         //  ÚJ ASANA TASK LÉTREHOZÁSA
         const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
-        const roleGid = await getEnumOptionGidFromProject(taskDetails.projectId, 'Szerepkör', submittedData.radio_button);
-        const plateGid = await getEnumOptionGidFromProject(taskDetails.projectId, 'Rendszám', submittedData.PlateNumber_dropdown);
-
+        const roleGid = await getEnumOptionGidFromProject('1210076978597830', 'Szerepkör', submittedData.radio_button);
+        const plateGid = await getEnumOptionGidFromProject('1210076978597830', 'Rendszám', submittedData.PlateNumber_dropdown);
+        
         try {
           const newTaskId = await createAsanaTask({
             name: workerName,
             dueDate: submittedData.Date_SL,
-            projectId: '1210076978597830',
+            projectId: '1210076978597830', // Asana Project ID
             customFields: {
               'Projektszám': taskDetails.projectNumber,
               'Projektnév': taskDetails.projectName,
               'Kilométer': parseFloat(submittedData.Distance_SL),
               'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
               'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70,
-              'Szerepkör': roleGid,
+              'Szerepkör': roleGid,  // Enum GID a szerepkörhöz
               'Kiszállás Dátuma': submittedData.date,
-              'Rendszám': plateGid
+              'Rendszám': plateGid  // Enum GID a rendszámhoz
             }
           });
           console.log('Új Asana task létrehozva:', newTaskId);

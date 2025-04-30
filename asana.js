@@ -67,7 +67,6 @@ async function getTaskDetails(taskId) {
   }
 }
 
-
 // Function to get user details from Asana
 async function getUserDetails(userId) {
   let opts = { 
@@ -95,13 +94,8 @@ async function getCustomFieldsForProject(projectId) {
     'opt_fields': "custom_field,custom_field.name,custom_field.type"
   };
 
-  
   try {
     const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
-
-
-
-   
     return result.data;
   } catch (error) {
     console.error('Error fetching custom fields for project:', error.message);
@@ -129,7 +123,7 @@ async function updateCustomField(taskId, projectId, totalKilometers) {
 
     let body = {"data":{"custom_fields":{[customFieldGid] : totalKilometers.toString()}}}; // Object | The task to update.
     console.log("-----");
- 
+
     let opts = {};
     tasksApiInstance.updateTask(body, taskId, opts).then((result) => {
         console.log('API called successfully.');
@@ -141,7 +135,6 @@ async function updateCustomField(taskId, projectId, totalKilometers) {
     throw error;
   }
 }
-
 
 // Új Asana task létrehozása mezőnevekkel
 async function createAsanaTask({ assignee, name, dueDate, projectId, customFields }) {
@@ -183,38 +176,20 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     throw error;
   }
 }
+
 // Enum GID lekérése projekt alapján
-async function getEnumOptionGidFromProject(projectId, fieldName, optionName) {
-  try {
-    const customFieldSettings = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, {
-      opt_fields: 'custom_field.name,custom_field.type,custom_field.enum_options'
-    });
-
-    const fieldSetting = customFieldSettings.data.find(
-      (setting) => setting.custom_field.name === fieldName && setting.custom_field.type === 'enum'
-    );
-
-    if (!fieldSetting) {
-      console.warn(`Mező nem található vagy nem enum típusú: ${fieldName}`);
-      return null;
+async function getEnumOptionGidFromProject(projectId, fieldName, fieldValue) {
+  const response = await axios.get(`https://app.asana.com/api/1.0/projects/${projectId}/custom_field_settings`);
+  const fieldData = response.data.data.find(field => field.name === fieldName);
+  
+  if (fieldData) {
+    const enumOption = fieldData.enum_options.find(option => option.name === fieldValue);
+    if (enumOption) {
+      return enumOption.gid;
     }
-
-    const enumOption = fieldSetting.custom_field.enum_options.find(
-      (opt) => opt.name === optionName
-    );
-
-    if (!enumOption) {
-      console.warn(`Enum opció nem található: ${optionName} a mezőn belül: ${fieldName}`);
-      return null;
-    }
-
-    return enumOption.gid;
-  } catch (error) {
-    console.error(`Hiba az enum GID lekérésekor (${fieldName} - ${optionName}):`, error.message);
-    return null;
   }
+  return null;
 }
-
 
 module.exports = {
   getTaskDetails,
