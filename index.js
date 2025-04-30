@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { submitDataToSheet, getRowsByTaskID } = require('./smartsheet');
-const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,getEnumOptionGidFromProject  } = require('./asana');
+const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask  } = require('./asana');
 const app = express();
 const port = process.env.PORT || 8000;
 let submittedData = {};
@@ -201,6 +201,7 @@ app.get('/form/metadata', async (req, res) => {
               id: 'Bozóki Róbert',
               label: 'Bozóki Róbert',
             },
+
             {
               id: 'Deák Ádám',
               label: 'Deák Ádám',
@@ -218,8 +219,8 @@ app.get('/form/metadata', async (req, res) => {
               label: 'Mendei Árpád',
             },
             {
-              id: 'Séllei Dádám',
-              label: 'Séllei Dádám',
+              id: 'Séllei Ádám',
+              label: 'Séllei Ádám',
             },
             {
               id: 'Palecska Gábor',
@@ -610,6 +611,7 @@ app.post('/search/attach', (req, res) => {
 
 app.post('/form/submit', async (req, res) => {
   console.log('Modal Form submitted!');
+  const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
 
   if (req.body.data) {
     try {
@@ -649,29 +651,26 @@ app.post('/form/submit', async (req, res) => {
         const { filteredRows, totalKilometers } = await getRowsByTaskID(
           8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', taskDetails.taskId
         );
-        
+
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
         console.log('SUBMITTED DATA:', submittedData);
-        
-        // ÚJ ASANA TASK LÉTREHOZÁSA
-        const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
-        const roleGid = await getEnumOptionGidFromProject('1210076978597830', 'Szerepkör', submittedData.radio_button);
-        const plateGid = await getEnumOptionGidFromProject('1210076978597830', 'Rendszám', submittedData.PlateNumber_dropdown);
-        
+        //  ÚJ ASANA TASK LÉTREHOZÁSA
         try {
           const newTaskId = await createAsanaTask({
-            name: workerName,
-            dueDate: submittedData.Date_SL,
-            projectId: '1210076978597830', // Asana Project ID
+            
+            name: workerName, // Name mező
+            dueDate: submittedData.Date_SL, // "Due date" mező
+            projectId: '1210076978597830', // Asana projekt ID
             customFields: {
               'Projektszám': taskDetails.projectNumber,
               'Projektnév': taskDetails.projectName,
               'Kilométer': parseFloat(submittedData.Distance_SL),
               'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
-              'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70,
-              'Szerepkör': roleGid,  // Enum GID a szerepkörhöz
-              'Kiszállás Dátuma': submittedData.date,
-              'Rendszám': plateGid  // Enum GID a rendszámhoz
+              'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
+              //'Szerepkör': submittedData.radio_button,
+              //'Rendszám': submittedData.PlateNumber_dropdown,
+              'Kiszállás Dátuma': submittedData.date
+              
             }
           });
           console.log('Új Asana task létrehozva:', newTaskId);
@@ -727,9 +726,6 @@ app.post('/kulsosmunkalap/submit', async (req, res) => {
     res.json(attachment_response);
   }
 });
-
-// Lekéri a megadott nevű mező enum opciói közül a keresett opció `gid` értékét
-
 
 
 const attachment_response = {

@@ -1,5 +1,4 @@
 const Asana = require('asana');
-const axios = require('axios');
 
 // Initialize Asana client
 let client = Asana.ApiClient.instance;
@@ -68,6 +67,7 @@ async function getTaskDetails(taskId) {
   }
 }
 
+
 // Function to get user details from Asana
 async function getUserDetails(userId) {
   let opts = { 
@@ -95,8 +95,13 @@ async function getCustomFieldsForProject(projectId) {
     'opt_fields': "custom_field,custom_field.name,custom_field.type"
   };
 
+  
   try {
     const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
+
+
+
+   
     return result.data;
   } catch (error) {
     console.error('Error fetching custom fields for project:', error.message);
@@ -124,7 +129,7 @@ async function updateCustomField(taskId, projectId, totalKilometers) {
 
     let body = {"data":{"custom_fields":{[customFieldGid] : totalKilometers.toString()}}}; // Object | The task to update.
     console.log("-----");
-
+ 
     let opts = {};
     tasksApiInstance.updateTask(body, taskId, opts).then((result) => {
         console.log('API called successfully.');
@@ -137,10 +142,11 @@ async function updateCustomField(taskId, projectId, totalKilometers) {
   }
 }
 
-// Function to create a new Asana task with custom fields
+
+// Új Asana task létrehozása mezőnevekkel
 async function createAsanaTask({ assignee, name, dueDate, projectId, customFields }) {
   try {
-    // Get custom field IDs for the project
+    // Lekérjük a projekthez tartozó custom field ID-ket
     const projectCustomFields = await getCustomFieldsForProject(projectId);
     console.log('projectCustomFields:', projectCustomFields);
     const customFieldIdMap = {};
@@ -149,7 +155,7 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
       customFieldIdMap[fieldName] = fieldSetting.custom_field.gid;
     }
 
-    // Build the custom_fields object based on ID
+    // Felépítjük a custom_fields objektumot ID-k alapján
     const customFieldsPayload = {};
     for (const [fieldName, value] of Object.entries(customFields)) {
       const fieldId = customFieldIdMap[fieldName];
@@ -178,19 +184,7 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
   }
 }
 
-// Function to get Enum option GID from project
-async function getEnumOptionGidFromProject(projectId, fieldName, fieldValue) {
-  const response = await axios.get(`https://app.asana.com/api/1.0/projects/${projectId}/custom_field_settings`);
-  const fieldData = response.data.data.find(field => field.name === fieldName);
-  
-  if (fieldData) {
-    const enumOption = fieldData.enum_options.find(option => option.name === fieldValue);
-    if (enumOption) {
-      return enumOption.gid;
-    }
-  }
-  return null;
-}
+
 
 module.exports = {
   getTaskDetails,
@@ -199,6 +193,5 @@ module.exports = {
   updateCustomField,
   getCustomFieldIdByName,
   createAsanaTask,
-  getEnumOptionGidFromProject,
   storiesApiInstance
 };
