@@ -186,77 +186,48 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     throw error;
   }
 }
-
-async function updateAsanaCustomField(taskId, projectId, fieldName, newValue) {
+async function updateEnumFields(taskId, projectId, szerepkorGid, szerepkorNev, rendszamGid, rendszamNev) {
   try {
-    // Lekérjük a projekthez tartozó custom field ID-ket
-    const projectCustomFields = await getCustomFieldsForProject(projectId);
-    console.log('updateAsanaCustomField projectCustomFields:', projectCustomFields);
-    if (!projectCustomFields || !Array.isArray(projectCustomFields)) {
-      console.error(`Nem sikerült lekérni a custom field-eket a '${fieldName}' frissítéséhez.`);
-      return;
+    // Enum opciók lekérése mindkét mezőhöz
+    const szerepkorField = await getCustomFieldDetails(szerepkorGid); // Enum options from API
+    console.log('szerepkorField:', szerepkorField);
+    const rendszamField = await getCustomFieldDetails(rendszamGid);
+    console.log('rendszamField:', rendszamField);
+    // Enum értékek GID-jeinek megkeresése név alapján
+    const szerepkorOption = szerepkorField.enum_options.find(opt => opt.name === szerepkorNev);
+    const rendszamOption = rendszamField.enum_options.find(opt => opt.name === rendszamNev);
+
+    if (!szerepkorOption || !rendszamOption) {
+      throw new Error('Nem található a megadott szerepkör vagy rendszám enum opció.');
     }
-    const fieldSetting = projectCustomFields.find(f => f.custom_field.name === fieldName);
 
-    if (!fieldSetting) {
-      console.warn(`Custom field '${fieldName}' nem található a projektben.`);
-      return;
-    }
-
-    const fieldId = fieldSetting.custom_field.gid;
-
-    const url = `https://app.asana.com/api/1.0/tasks/${taskId}`;
-    const payload = {
+    const body = {
       data: {
         custom_fields: {
-          [fieldId]: newValue
+          [szerepkorGid]: szerepkorOption.gid,
+          [rendszamGid]: rendszamOption.gid
         }
       }
     };
 
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${ASANA_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Asana API error: ${response.status} - ${errorText}`);
-    }
-
-    console.log(`Custom field '${fieldName}' frissítve.`);
+    await tasksApiInstance.updateTask(body, taskId);
+    console.log('Enum típusú mezők frissítve.');
   } catch (error) {
-    console.error(`Hiba a '${fieldName}' frissítésekor:`, error.message);
+    console.error('Hiba a szerepkör vagy rendszám frissítésekor:', error.message);
+  }
+}
+
+async function getCustomFieldDetails(customFieldGid) {
+  try {
+    const response = await customFieldsApiInstance.getCustomField(customFieldGid, { opt_fields: 'enum_options' });
+
+    return response.data;
+  } catch (error) {
+    console.error(`Hiba a ${customFieldGid} részleteinek lekérésekor:`, error.message);
     throw error;
   }
 }
-async function getEnumOptionGid(projectId, fieldName, optionName) {
-  const projectCustomFields = await getCustomFieldsForProject(projectId);
-  if (!projectCustomFields || !Array.isArray(projectCustomFields)) {
-    console.error(`Nem sikerült lekérni a custom field-eket a(z) ${projectId} projektből.`);
-    return null;
-  }
-  const fieldSetting = projectCustomFields.find(f => f.custom_field.name === fieldName);
 
-  if (!fieldSetting) {
-    console.warn(`Custom field '${fieldName}' nem található a projektben.`);
-    return null;
-  }
-
-  const enumOptions = fieldSetting.custom_field.enum_options;
-  const option = enumOptions.find(opt => opt.name === optionName);
-
-  if (!option) {
-    console.warn(`Option '${optionName}' nem található a '${fieldName}' mezőben.`);
-    return null;
-  }
-
-  return option.gid;
-}
 
 module.exports = {
   getTaskDetails,
@@ -265,7 +236,6 @@ module.exports = {
   updateCustomField,
   getCustomFieldIdByName,
   createAsanaTask,
-  updateAsanaCustomField,
-  getEnumOptionGid,
+  updateEnumFields,
   storiesApiInstance
 };
