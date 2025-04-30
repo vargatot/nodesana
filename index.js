@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { submitDataToSheet, getRowsByTaskID } = require('./smartsheet');
-const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,getEnumOptionGid  } = require('./asana');
+const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,getEnumOptionGidFromProject  } = require('./asana');
 const app = express();
 const port = process.env.PORT || 8000;
 let submittedData = {};
@@ -654,8 +654,9 @@ app.post('/form/submit', async (req, res) => {
         console.log('SUBMITTED DATA:', submittedData);
         //  ÚJ ASANA TASK LÉTREHOZÁSA
         const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
-        const roleGid = await getEnumOptionGid(workspaceId, 'Szerepkör', submittedData.radio_button);
-        const plateGid = await getEnumOptionGid(workspaceId, 'Rendszám', submittedData.PlateNumber_dropdown);
+        const roleGid = await getEnumOptionGidFromProject(taskDetails.projectId, 'Szerepkör', submittedData.radio_button);
+        const plateGid = await getEnumOptionGidFromProject(taskDetails.projectId, 'Rendszám', submittedData.PlateNumber_dropdown);
+
         try {
           const newTaskId = await createAsanaTask({
             name: workerName,
