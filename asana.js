@@ -152,7 +152,7 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
   try {
     // Lekérjük a projekthez tartozó custom field ID-ket
     const projectCustomFields = await getCustomFieldsForProject(projectId);
-    console.log('projectCustomFields:', projectCustomFields);
+    
     const customFieldIdMap = {};
     for (const fieldSetting of projectCustomFields) {
       const fieldName = fieldSetting.custom_field.name;
@@ -170,11 +170,15 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
       }
     }
 
+    // Érvényes dátum ellenőrzés (YYYY-MM-DD formátum)
+    const validDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const isValidDate = dueDate && validDateRegex.test(dueDate);
+
     const taskData = {
       data: {
         name: name,
         assignee: assignee,
-        due_on: dueDate,
+        ...(isValidDate ? { due_on: dueDate } : {}), // Csak akkor adjuk hozzá, ha valid a dátum
         projects: [projectId],
         custom_fields: customFieldsPayload
       }
@@ -187,6 +191,7 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     throw error;
   }
 }
+
 async function updateRendszamField(taskId, rendszamNev) {
   try {
     // Enum értékek GID-jei rendszámokhoz (ne bővüljön dinamikusan, fix GID-ek!)
