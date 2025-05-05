@@ -291,6 +291,31 @@ async function updateSzerepkorField(taskId, szerepkorNev) {
   }
 }
 
+async function updateKiszallasDatumaField(taskId, datum) {
+  try {
+    // "Kiszállás Dátuma" mező GID-je – ezt cseréld ki a valódi értékre, ha más
+    const kiszallasDatumaFieldGid = "1201389865840000"; // ← Példa GID, cseréld ha szükséges
+
+    // ISO dátum formátumra konvertálás, ha nem úgy jött
+    const isoDatum = new Date(datum).toISOString().split('T')[0]; // csak 'YYYY-MM-DD' kell
+
+    const body = {
+      data: {
+        custom_fields: {
+          [kiszallasDatumaFieldGid]: isoDatum
+        }
+      }
+    };
+
+    const opts = {};
+
+    await tasksApiInstance.updateTask(body, taskId, opts);
+    console.log(`Kiszállás dátuma frissítve: ${isoDatum}`);
+  } catch (error) {
+    console.error('Hiba a Kiszállás Dátuma mező frissítésekor:', error.message);
+    throw error;
+  }
+}
 
 
 module.exports = {
@@ -302,5 +327,6 @@ module.exports = {
   createAsanaTask,
   updateSzerepkorField,
   updateRendszamField,
+  updateKiszallasDatumaField,
   storiesApiInstance
 };

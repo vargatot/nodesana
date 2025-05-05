@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { submitDataToSheet, getRowsByTaskID } = require('./smartsheet');
-const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,updateSzerepkorField,updateRendszamField } = require('./asana');
+const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,updateSzerepkorField,updateRendszamField,updateKiszallasDatumaField } = require('./asana');
 const app = express();
 const port = process.env.PORT || 8000;
 let submittedData = {};
@@ -611,9 +611,8 @@ app.post('/search/attach', (req, res) => {
 
 app.post('/form/submit', async (req, res) => {
   console.log('Modal Form submitted!');
-  const workspaceId = '23166877939657';
-  const asanaProjectId = '1210076978597830';
-
+  const workspaceId = '23166877939657'; // Cseréld ki a saját Asana workspace ID-re
+  
   if (req.body.data) {
     try {
       await submitQueue.add(async () => {
@@ -622,17 +621,19 @@ app.post('/form/submit', async (req, res) => {
 
         const validNumberRegex = /^\d+(\.\d+)?$/;
 
-        // Validálás
+        // Distance validation
         const distance = submittedData.Distance_SL;
         if (!validNumberRegex.test(distance) || parseFloat(distance) < 0 || parseFloat(distance) > 10000) {
-          return res.status(400).send('Hibás távolság érték.');
+          return res.status(400).send('Hibás távolság érték. A távolság nem lehet negatív, és maximum 10,000 lehet, illetve csak érvényes szám lehet.');
         }
 
+        // Travel time validation
         const travelTime = submittedData.Distance_Time_SL;
         if (!validNumberRegex.test(travelTime) || parseFloat(travelTime) < 0 || parseFloat(travelTime) > 24) {
-          return res.status(400).send('Hibás útidő érték.');
+          return res.status(400).send('Hibás útidő érték. Az útidő nem lehet negatív, és maximum 24 óra lehet, illetve csak érvényes szám lehet.');
         }
 
+        // Task ID lekérés
         const taskId = req.body.task || parsedData.task || parsedData.AsanaTaskName_SL;
         const taskDetails = await getTaskDetails(taskId);
         submittedData.AsanaTaskID_SL = taskDetails.taskId;
@@ -643,57 +644,50 @@ app.post('/form/submit', async (req, res) => {
 
         submittedData.AsanaTaskLink = `https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId}`;
 
+        // Eredeti Smartsheet mentés
         await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', submittedData);
 
+        // Kilométerek lekérdezése és frissítése Asanában
         const { filteredRows, totalKilometers } = await getRowsByTaskID(
           8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', taskDetails.taskId
         );
+        
         await updateCustomField(taskDetails.taskId, taskDetails.projectId, totalKilometers);
-
         console.log('SUBMITTED DATA:', submittedData);
-
-        // 🔹 Get custom field ID map for the project
-        const customFieldIdMap = await getCustomFieldsForProject(asanaProjectId);
-
-        // 🔹 Custom field values
-        const customFields = {
-          'Projektszám': taskDetails.projectNumber,
-          'Projektnév': taskDetails.projectName,
-          'Kilométer': parseFloat(submittedData.Distance_SL),
-          'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
-          'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70,
-          'Kiszállás Dátuma': submittedData.date
-        };
-
-        const customFieldsPayload = {};
-        for (const [name, value] of Object.entries(customFields)) {
-          const fieldId = customFieldIdMap[name];
-          if (fieldId) {
-            customFieldsPayload[fieldId] = value;
-          } else {
-            console.warn(`Custom field '${name}' nem található.`);
-          }
-        }
-
+        //  ÚJ ASANA TASK LÉTREHOZÁSA
         try {
+          
           const newTaskId = await createAsanaTask({
-            name: workerName,
-            dueDate: submittedData.date,
-            projectId: asanaProjectId,
-            customFields: customFieldsPayload
+            
+            name: workerName, // Name mező
+            dueDate: submittedData.date, // "Due date" mező
+            projectId: '1210076978597830', // Asana projekt ID
+            customFields: {
+              'Projektszám': taskDetails.projectNumber,
+              'Projektnév': taskDetails.projectName,
+              'Kilométer': parseFloat(submittedData.Distance_SL),
+              'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
+              'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
+              //'Szerepkör': submittedData.radio_button,
+              //'Rendszám': submittedData.PlateNumber_dropdown,
+              //'Kiszállás Dátuma': '2025-05-05'
+            }
           });
-
+          
           console.log('Új Asana task létrehozva:', newTaskId);
           await updateSzerepkorField(newTaskId, submittedData.radio_button);
           await updateRendszamField(newTaskId, submittedData.PlateNumber_dropdown);
-
+          await updateKiszallasDatumaField(newTaskId, submittedData.date);
         } catch (asanaError) {
           console.error('Nem sikerült új Asana taskot létrehozni:', asanaError.message);
         }
 
+        // Válasz küldése
         res.json({ attachment_response, totalKilometers });
-      });
 
+          
+      });
+      
     } catch (error) {
       console.log('Error parsing data:', error);
       res.status(500).send('Error submitting data to Smartsheet');
