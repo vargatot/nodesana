@@ -90,29 +90,24 @@ async function getUserDetails(userId) {
 
 // Function to fetch custom fields for a project
 async function getCustomFieldsForProject(projectId) {
+  let opts = { 
+    'limit': 50, 
+    'opt_fields': "custom_field,custom_field.name,custom_field.type"
+  };
+  console.log(projectId);
+  console.log("-------------1");
   try {
-    const response = await projectsApiInstance.getProject(projectId, {
-      opt_fields: 'custom_field_settings.custom_field.name,custom_field_settings.custom_field.gid,custom_field_settings.custom_field.type'
-    });
+    const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
 
-    const fieldSettings = response.data.custom_field_settings || [];
 
-    const customFieldIdMap = {};
-    for (const fieldSetting of fieldSettings) {
-      const field = fieldSetting.custom_field;
-      if (field?.name && field?.gid) {
-        customFieldIdMap[field.name] = field.gid;
-        console.log(`${field.name} (${field.type})`);
-      }
-    }
-
-    return customFieldIdMap;
+  
+    console.log("-------------2");
+    return result.data;
   } catch (error) {
-    console.error('Hiba a custom field-ek lekérdezésekor:', error.message);
-    return {};
+    console.error('Error fetching custom fields for project:', error.message);
+    throw error;
   }
 }
-
 
 // Function to get the custom field ID by name
 async function getCustomFieldIdByName(projectId, fieldName) {
