@@ -90,22 +90,24 @@ async function getUserDetails(userId) {
 
 // Function to fetch custom fields for a project
 async function getCustomFieldsForProject(projectId) {
-  let opts = { 
-    'limit': 50, 
-    'opt_fields': "custom_field,custom_field.name,custom_field.type"
-  };
-  console.log(projectId);
-  console.log("-------------1");
   try {
-    const result = await customFieldSettingsApiInstance.getCustomFieldSettingsForProject(projectId, opts);
+    const project = await projectsApiInstance.getProject(projectId, {
+      opt_fields: 'custom_field_settings.custom_field.name,custom_field_settings.custom_field.gid,custom_field_settings.custom_field.type'
+    });
 
+    const settings = project.data.custom_field_settings || [];
 
-  
-    console.log("-------------2");
-    return result.data;
+    // Debug log – ez most már működni fog!
+    for (const fieldSetting of settings) {
+      const name = fieldSetting.custom_field?.name;
+      const type = fieldSetting.custom_field?.type;
+      console.log(`${name} (${type})`);
+    }
+
+    return settings;
   } catch (error) {
-    console.error('Error fetching custom fields for project:', error.message);
-    throw error;
+    console.error('Nem sikerült lekérni a projekt custom fieldjeit:', error.message);
+    return [];
   }
 }
 
