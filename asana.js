@@ -293,7 +293,7 @@ async function updateKiszallasDatumaField(taskId, datum) {
 
     // ISO dátum formátumra konvertálás, ha nem úgy jött
     const isoDatum = new Date(datum).toISOString().split('T')[0]; // csak 'YYYY-MM-DD' kell
-
+    console.log(`isoDatum datum: ${isoDatum} (${datum})`);
     const body = {
       data: {
         custom_fields: {
