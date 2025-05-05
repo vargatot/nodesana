@@ -659,7 +659,7 @@ app.post('/form/submit', async (req, res) => {
           const newTaskId = await createAsanaTask({
             
             name: workerName, // Name mező
-            dueDate: submittedData.Date_SL, // "Due date" mező
+            dueDate: submittedData.date, // "Due date" mező
             projectId: '1210076978597830', // Asana projekt ID
             customFields: {
               'Projektszám': taskDetails.projectNumber,
@@ -669,7 +669,7 @@ app.post('/form/submit', async (req, res) => {
               'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
               //'Szerepkör': submittedData.radio_button,
               //'Rendszám': submittedData.PlateNumber_dropdown,
-              'Kiszállás Dátuma': submittedData.Date_SL
+              'Kiszállás Dátuma': submittedData.date
             }
           });
           
