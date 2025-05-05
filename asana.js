@@ -289,7 +289,7 @@ async function updateSzerepkorField(taskId, szerepkorNev) {
 async function updateKiszallasDatumaField(taskId, datum) {
   try {
     // "Kiszállás Dátuma" mező GID-je – ezt cseréld ki a valódi értékre, ha más
-    const kiszallasDatumaFieldGid = "1201389865840000"; // ← Példa GID, cseréld ha szükséges
+    const kiszallasDatumaFieldGid = "1210107930767425"; // ← Példa GID, cseréld ha szükséges
 
     // ISO dátum formátumra konvertálás, ha nem úgy jött
     const isoDatum = new Date(datum).toISOString().split('T')[0]; // csak 'YYYY-MM-DD' kell
