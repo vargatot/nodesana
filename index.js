@@ -390,12 +390,12 @@ app.get('/form/metadata', async (req, res) => {
           name: "Szerepkör",
           type: "radio_button",
           id: "radio_button",
-          is_required: false,
+          is_required: true,
           options: [
-            {
+            /*{
               id: "Alapértelmezett",
               label: "Alapértelmezett",
-            },
+            },*/
             {
               id: "Programozás",
               label: "Programozás",
@@ -669,7 +669,7 @@ app.post('/form/submit', async (req, res) => {
               'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
               //'Szerepkör': submittedData.radio_button,
               //'Rendszám': submittedData.PlateNumber_dropdown,
-              'Kiszállás Dátuma': submittedData.date
+              //'Kiszállás Dátuma': submittedData.date
             }
           });
           
