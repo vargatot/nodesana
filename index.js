@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const { submitDataToSheet, getRowsByTaskID } = require('./smartsheet');
-const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,updateSzerepkorField,updateRendszamField,updateKiszallasDatumaField } = require('./asana');
+const { getTaskDetails, getUserDetails, getCustomFieldsForProject, updateCustomField, storiesApiInstance,createAsanaTask,updateSzerepkorField,updateRendszamField } = require('./asana');
 const app = express();
 const port = process.env.PORT || 8000;
 let submittedData = {};
@@ -677,7 +677,7 @@ app.post('/form/submit', async (req, res) => {
           console.log('Új Asana task létrehozva:', newTaskId);
           await updateSzerepkorField(newTaskId, submittedData.radio_button);
           await updateRendszamField(newTaskId, submittedData.PlateNumber_dropdown);
-          await updateKiszallasDatumaField(newTaskId, submittedData.date);
+       //   await updateKiszallasDatumaField(newTaskId, submittedData.date);
         } catch (asanaError) {
           console.error('Nem sikerült új Asana taskot létrehozni:', asanaError.message);
         }

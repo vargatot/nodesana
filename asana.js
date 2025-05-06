@@ -285,7 +285,7 @@ async function updateSzerepkorField(taskId, szerepkorNev) {
     throw error;
   }
 }
-
+/*
 async function updateKiszallasDatumaField(taskId, datum) {
   try {
     // "Kiszállás Dátuma" mező GID-je – ezt cseréld ki a valódi értékre, ha más
@@ -310,7 +310,7 @@ async function updateKiszallasDatumaField(taskId, datum) {
     console.error('Hiba a Kiszállás Dátuma mező frissítésekor:', error.message);
     throw error;
   }
-}
+}*/
 
 
 module.exports = {
@@ -322,6 +322,6 @@ module.exports = {
   createAsanaTask,
   updateSzerepkorField,
   updateRendszamField,
-  updateKiszallasDatumaField,
+ // updateKiszallasDatumaField,
   storiesApiInstance
 };
