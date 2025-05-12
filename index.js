@@ -395,12 +395,12 @@ app.get('/form/metadata', async (req, res) => {
           name: "Szerepkör",
           type: "radio_button",
           id: "radio_button",
-          is_required: false,
+          is_required: true,
           options: [
-            /*{
+            {
               id: "Alapértelmezett",
               label: "Alapértelmezett",
-            },*/
+            },
             {
               id: "Programozás",
               label: "Programozás",
@@ -649,23 +649,22 @@ app.post('/form/submit', async (req, res) => {
 
         submittedData.AsanaTaskLink = `https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId}`;
 
-        if (!submittedData.radio_button) {
-              const programmerNames = ['Bányai Gábor', 'Deák Ádám', 'Keller Zoltán', 'Mendei Árpád', 'Sinka Balázs', 'Tóth Szabolcs'];
-              const planningNames = ['Bozóki Róbert', 'Klein Antal', 'Szepesi Róbert', 'Szöllősi Sándor', 'Szancsik Ferenc'];
-              const pmNames = ['Varga-Tóth István', 'Varga-Tóth Ádám', 'Palecska Gábor', 'Séllei Ádám'];
-              const procurementNames = ['Kis Péter'];
+        if (!submittedData.radio_button || submittedData.radio_button === 'Alapértelmezett') {
+          const programmerNames = ['Bányai Gábor', 'Deák Ádám', 'Keller Zoltán', 'Mendei Árpád', 'Sinka Balázs', 'Tóth Szabolcs'];
+          const planningNames = ['Bozóki Róbert', 'Klein Antal', 'Szepesi Róbert', 'Szöllősi Sándor', 'Szancsik Ferenc'];
+          const pmNames = ['Varga-Tóth István', 'Varga-Tóth Ádám', 'Palecska Gábor', 'Séllei Ádám'];
+          const procurementNames = ['Kis Péter'];
 
-              if (programmerNames.includes(workerName)) {
-                submittedData.radio_button = 'Programozó';
-              } else if (planningNames.includes(workerName)) {
-                submittedData.radio_button = 'Tervezés';
-              } else if (pmNames.includes(workerName)) {
-                submittedData.radio_button = 'PM';
-              } else if (procurementNames.includes(workerName)) {
-                submittedData.radio_button = 'Beszerzés';
-              }
+          if (programmerNames.includes(workerName)) {
+            submittedData.radio_button = 'Programozó';
+          } else if (planningNames.includes(workerName)) {
+            submittedData.radio_button = 'Tervezés';
+          } else if (pmNames.includes(workerName)) {
+            submittedData.radio_button = 'PM';
+          } else if (procurementNames.includes(workerName)) {
+            submittedData.radio_button = 'Beszerzés';
           }
-
+        }
 
         
 
