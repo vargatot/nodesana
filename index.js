@@ -656,7 +656,7 @@ app.post('/form/submit', async (req, res) => {
           const procurementNames = ['Kis Péter'];
 
           if (programmerNames.includes(workerName)) {
-            submittedData.radio_button = 'Programozó';
+            submittedData.radio_button = 'Programozás';
           } else if (planningNames.includes(workerName)) {
             submittedData.radio_button = 'Tervezés';
           } else if (pmNames.includes(workerName)) {
