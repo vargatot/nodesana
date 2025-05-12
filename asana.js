@@ -176,7 +176,7 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     // Érvényes dátum ellenőrzés (YYYY-MM-DD formátum)
     const validDateRegex = /^\d{4}-\d{2}-\d{2}$/;
     const isValidDate = dueDate && validDateRegex.test(dueDate);
-
+    console.log('Valid Date:', isValidDate);
     const taskData = {
       data: {
         name: name,
