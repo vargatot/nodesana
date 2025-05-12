@@ -174,10 +174,8 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     }
 
     // Érvényes dátum ellenőrzés (YYYY-MM-DD formátum)
-    const validDateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    console.log('validDateRegex:', validDateRegex);
+    const isValidDate = dueDate && isValidDateString(dueDate);
     console.log('dueDate:', dueDate);
-    const isValidDate = dueDate && validDateRegex.test(dueDate);
     console.log('Valid Date:', isValidDate);
     const taskData = {
       data: {
@@ -196,7 +194,19 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     throw error;
   }
 }
+function isValidDateString(dateStr) {
+  const validDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!validDateRegex.test(dateStr)) return false;
 
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() + 1 === month &&
+    date.getUTCDate() === day
+  );
+}
 async function updateRendszamField(taskId, rendszamNev) {
   try {
     // Enum értékek GID-jei rendszámokhoz (ne bővüljön dinamikusan, fix GID-ek!)
