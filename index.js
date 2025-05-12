@@ -33,6 +33,7 @@ const workerEmailMapping = {
   'Bozóki Róbert': 'bozoki.robert@promir.hu', // Replace with the actual email
   'Deák Ádám': 'deak.adam@promir.hu', // Replace with the actual email
   'Keller Zoltán': 'keller.zoltan@promir.hu', // Replace with the actual email
+  'Kis Péter': 'kis.peter@promir.hu', // Replace with the actual email
   'Klein Antal': 'klein.antal@promir.hu', // Replace with the actual email
   'Séllei Ádám': 'sellei.adam@promir.hu', // Replace with the actual email
   'Mendei Árpád': 'mendei.arpad@promir.hu', // Replace with the actual email
@@ -209,6 +210,10 @@ app.get('/form/metadata', async (req, res) => {
             {
               id: 'Keller Zoltán',
               label: 'Keller Zoltán',
+            },
+            {
+              id: 'Kis Péter',
+              label: 'Kis Péter',
             },
             {
               id: 'Klein Antal',
@@ -390,7 +395,7 @@ app.get('/form/metadata', async (req, res) => {
           name: "Szerepkör",
           type: "radio_button",
           id: "radio_button",
-          is_required: true,
+          is_required: false,
           options: [
             /*{
               id: "Alapértelmezett",
@@ -643,6 +648,29 @@ app.post('/form/submit', async (req, res) => {
         submittedData.UserID = workerEmail;
 
         submittedData.AsanaTaskLink = `https://app.asana.com/0/${taskDetails.projectId}/${taskDetails.taskId}`;
+
+        if (!submittedData.radio_button) {
+              const programmerNames = ['Bányai Gábor', 'Deák Ádám', 'Keller Zoltán', 'Mendei Árpád', 'Sinka Balázs', 'Tóth Szabolcs'];
+              const planningNames = ['Bozóki Róbert', 'Klein Antal', 'Szepesi Róbert', 'Szöllősi Sándor', 'Szancsik Ferenc'];
+              const pmNames = ['Varga-Tóth István', 'Varga-Tóth Ádám', 'Palecska Gábor', 'Séllei Ádám'];
+              const procurementNames = ['Kis Péter'];
+
+              if (programmerNames.includes(workerName)) {
+                submittedData.radio_button = 'Programozó';
+              } else if (planningNames.includes(workerName)) {
+                submittedData.radio_button = 'Tervezés';
+              } else if (pmNames.includes(workerName)) {
+                submittedData.radio_button = 'PM';
+              } else if (procurementNames.includes(workerName)) {
+                submittedData.radio_button = 'Beszerzés';
+              }
+          }
+
+
+        
+
+
+
 
         // Eredeti Smartsheet mentés
         await submitDataToSheet(8740124331665284, 'Munkaidő és kiszállás', 'Projektköltségek', submittedData);
