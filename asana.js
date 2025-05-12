@@ -175,14 +175,22 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     }
 
     // Dátum ellenőrzés és átalakítás YYYY-MM-DD formátumra
-    const isDateObject = dueDate instanceof Date && !isNaN(dueDate);
-    const isDateString = typeof dueDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dueDate);
-
     let formattedDueDate = null;
-    if (isDateObject) {
+
+    if (dueDate instanceof Date && !isNaN(dueDate)) {
+      // valódi Date objektum
       formattedDueDate = formatDateToYMD(dueDate);
-    } else if (isDateString) {
-      formattedDueDate = dueDate;
+    } else if (typeof dueDate === 'string') {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
+        // tiszta YYYY-MM-DD
+        formattedDueDate = dueDate;
+      } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(dueDate)) {
+        // ISO-formátumú dátumstring
+        const parsed = new Date(dueDate);
+        if (!isNaN(parsed)) {
+          formattedDueDate = formatDateToYMD(parsed);
+        }
+      }
     }
 
     const isValidDate = Boolean(formattedDueDate);
@@ -194,7 +202,7 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
       data: {
         name: name,
         assignee: assignee,
-        ...(isValidDate ? { due_on: formattedDueDate } : {}), // Csak akkor adjuk hozzá, ha valid a dátum
+        ...(isValidDate ? { due_on: formattedDueDate } : {}), // csak ha valid a dátum
         projects: [projectId],
         custom_fields: customFieldsPayload
       }
