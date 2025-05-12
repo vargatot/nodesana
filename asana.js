@@ -153,9 +153,10 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     // Lekérjük a projekthez tartozó custom field ID-ket
     const projectCustomFields = await getCustomFieldsForProject(projectId);
     console.log('Custom field nevek a projektben:');
-          for (const fieldSetting of projectCustomFields) {
-            console.log(`${fieldSetting.custom_field.name} (${fieldSetting.custom_field.resource_subtype})`);
-          }
+    for (const fieldSetting of projectCustomFields) {
+      console.log(`${fieldSetting.custom_field.name} (${fieldSetting.custom_field.resource_subtype})`);
+    }
+
     const customFieldIdMap = {};
     for (const fieldSetting of projectCustomFields) {
       const fieldName = fieldSetting.custom_field.name;
@@ -173,15 +174,27 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
       }
     }
 
-    // Érvényes dátum ellenőrzés (YYYY-MM-DD formátum)
-    const isValidDate = dueDate && isValidDateString(dueDate);
+    // Dátum ellenőrzés és átalakítás YYYY-MM-DD formátumra
+    const isDateObject = dueDate instanceof Date && !isNaN(dueDate);
+    const isDateString = typeof dueDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dueDate);
+
+    let formattedDueDate = null;
+    if (isDateObject) {
+      formattedDueDate = formatDateToYMD(dueDate);
+    } else if (isDateString) {
+      formattedDueDate = dueDate;
+    }
+
+    const isValidDate = Boolean(formattedDueDate);
     console.log('dueDate:', dueDate);
+    console.log('Formatted dueDate:', formattedDueDate);
     console.log('Valid Date:', isValidDate);
+
     const taskData = {
       data: {
         name: name,
         assignee: assignee,
-        ...(isValidDate ? { due_on: dueDate } : {}), // Csak akkor adjuk hozzá, ha valid a dátum
+        ...(isValidDate ? { due_on: formattedDueDate } : {}), // Csak akkor adjuk hozzá, ha valid a dátum
         projects: [projectId],
         custom_fields: customFieldsPayload
       }
@@ -194,18 +207,12 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
     throw error;
   }
 }
-function isValidDateString(dateStr) {
-  const validDateRegex = /^\d{4}-\d{2}-\d{2}$/;
-  if (!validDateRegex.test(dateStr)) return false;
 
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-
-  return (
-    date.getUTCFullYear() === year &&
-    date.getUTCMonth() + 1 === month &&
-    date.getUTCDate() === day
-  );
+function formatDateToYMD(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 async function updateRendszamField(taskId, rendszamNev) {
   try {
