@@ -294,6 +294,10 @@ app.get('/form/metadata', async (req, res) => {
               label: 'AIHH-239',
             },
             {
+              id: 'AOFR-496',
+              label: 'AOFR-496',
+            },
+            {
               id: 'MBN-927',
               label: 'MBN-927',
             },
