@@ -699,10 +699,10 @@ app.post('/form/submit', async (req, res) => {
               'Kilométer': parseFloat(submittedData.Distance_SL),
               'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
               'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
-              'UserID': submittedData.UserID,
-              'ASANA task ID': submittedData.AsanaTaskID_SL,
-              'ASANA task LINK': submittedData.AsanaTaskLink,
-              'ASANA task neve': submittedData.AsanaTaskName_SL,
+              'UserID': String(submittedData.UserID),
+              'ASANA task ID': String(submittedData.AsanaTaskID_SL),
+              'ASANA task LINK': String(submittedData.AsanaTaskLink),
+              'ASANA task neve': String(submittedData.AsanaTaskName_SL),
               //'Szerepkör': submittedData.radio_button,
               //'Rendszám': submittedData.PlateNumber_dropdown,
               //'Kiszállás Dátuma': '2025-05-05'
