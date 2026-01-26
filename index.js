@@ -426,6 +426,10 @@ app.get('/form/metadata', async (req, res) => {
               label: "Beszerzés",
             },
             {
+              id: "Beüzemelés",
+              label: "Beüzemelés",
+            },
+            {
               id: "CRM",
               label: "CRM",
             },
