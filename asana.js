@@ -247,7 +247,8 @@ async function updateRendszamField(taskId, rendszamNev) {
       "LWF-099": "1210109192980879",
       "MVU-936": "1210109192980880",
       "GÉPKOCSI": "1210109192980881",
-      "UTAS": "1210109192980882"
+      "UTAS": "1210109192980882",
+      "AOFR-496": "1211649299021857"
     };
 
     // Enum típusú custom field GID-je (Rendszám mező)
