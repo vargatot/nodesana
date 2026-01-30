@@ -635,9 +635,9 @@ app.post('/form/submit', async (req, res) => {
 
         // Travel time validation
         //const travelTime = submittedData.Distance_Time_SL;
-        if (!validNumberRegex.test(travelTime) || parseFloat(travelTime) < 0 || parseFloat(travelTime) > 24) {
+        /*if (!validNumberRegex.test(travelTime) || parseFloat(travelTime) < 0 || parseFloat(travelTime) > 24) {
           return res.status(400).send('Hibás útidő érték. Az útidő nem lehet negatív, és maximum 24 óra lehet, illetve csak érvényes szám lehet.');
-        }
+        }*/
 
         // Task ID lekérés
         const taskId = req.body.task || parsedData.task || parsedData.AsanaTaskName_SL;

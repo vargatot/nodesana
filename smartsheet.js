@@ -16,7 +16,7 @@ const columnMapping = {
   Worker_dropdown: 'Munkavégző',
   date: 'Munkavégzés dátuma',
   Distance_SL: 'Távolság',
-  Distance_Time_SL: 'Beírt útidő (ó)',
+  //Distance_Time_SL: 'Beírt útidő (ó)',
   radio_button: 'Szerepkör',
   PlateNumber_dropdown: 'Rendszám',
   AsanaTaskID_SL: 'ASANA TaskID',
@@ -73,16 +73,16 @@ async function submitDataToSheet(workspaceId, folderName, sheetName, submittedDa
       submittedData.Distance_SL = parseFloat(submittedData.Distance_SL) || 0;
 
       // Check if Distance_Time_SL is empty or 0 and calculate if necessary
-      if (!submittedData.Distance_Time_SL || submittedData.Distance_Time_SL == 0) {
+     /* if (!submittedData.Distance_Time_SL || submittedData.Distance_Time_SL == 0) {
         const calculatedTime = (submittedData.Distance_SL / 70).toFixed(2);
         submittedData.Distance_Time_SL = calculatedTime;
         console.log(`km: ${submittedData.Distance_SL} - beírandó érték: ${calculatedTime}`);
-      }
+      }*/
 
       // Prepare the row data
-      if (submittedData.Distance_Time_SL) {
+      /*) {
         submittedData.Distance_Time_SL = parseFloat(submittedData.Distance_Time_SL.replace(',', '.')); // Ensure it's a number with '.' as a decimal separator
-      }
+      }*/
      // Prepare the row data
       const row = {
         toBottom: true,
