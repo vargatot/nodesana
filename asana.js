@@ -176,22 +176,27 @@ async function createAsanaTask({ assignee, name, dueDate, projectId, customField
 
     // Dátum ellenőrzés és átalakítás YYYY-MM-DD formátumra
     let formattedDueDate = null;
-
-    if (dueDate instanceof Date && !isNaN(dueDate)) {
-      // valódi Date objektum
-      formattedDueDate = formatDateToYMD(dueDate);
-    } else if (typeof dueDate === 'string') {
-      if (/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
-        // tiszta YYYY-MM-DD
-        formattedDueDate = dueDate;
-      } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(dueDate)) {
-        // ISO-formátumú dátumstring
-        const parsed = new Date(dueDate);
-        if (!isNaN(parsed)) {
-          formattedDueDate = formatDateToYMD(parsed);
-        }
-      }
+    
+if (dueDate instanceof Date && !isNaN(dueDate)) {
+  // valódi Date objektum
+  formattedDueDate = formatDateToYMD(
+    new Date(dueDate.getTime() + 24 * 60 * 60 * 1000)
+  );
+} else if (typeof dueDate === 'string') {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
+    // tiszta YYYY-MM-DD
+    formattedDueDate = dueDate;
+  } else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(dueDate)) {
+    // ISO-formátumú dátumstring
+    const parsed = new Date(dueDate);
+    if (!isNaN(parsed)) {
+      formattedDueDate = formatDateToYMD(
+        new Date(parsed.getTime() + 24 * 60 * 60 * 1000)
+      );
     }
+  }
+}
+
 
     const isValidDate = Boolean(formattedDueDate);
     console.log('dueDate:', dueDate);

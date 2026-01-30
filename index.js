@@ -381,7 +381,7 @@ app.get('/form/metadata', async (req, res) => {
           width: "half",
           value: "0",
         },
-        {
+       /* {
           name: "Útidő (óra) - [Nem kötelező]",
           type: "single_line_text",
           id: "Distance_Time_SL",
@@ -389,7 +389,7 @@ app.get('/form/metadata', async (req, res) => {
           placeholder: "0",
           width: "half",
           value: "0",
-        },
+        },*/
         
         {
           name: "Szerepkör",
@@ -634,7 +634,7 @@ app.post('/form/submit', async (req, res) => {
         }
 
         // Travel time validation
-        const travelTime = submittedData.Distance_Time_SL;
+        //const travelTime = submittedData.Distance_Time_SL;
         if (!validNumberRegex.test(travelTime) || parseFloat(travelTime) < 0 || parseFloat(travelTime) > 24) {
           return res.status(400).send('Hibás útidő érték. Az útidő nem lehet negatív, és maximum 24 óra lehet, illetve csak érvényes szám lehet.');
         }
@@ -694,7 +694,7 @@ app.post('/form/submit', async (req, res) => {
               'Projektszám': taskDetails.projectNumber,
               'Projektnév': taskDetails.projectName,
               'Kilométer': parseFloat(submittedData.Distance_SL),
-              'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
+              //'Beírt útidő (ó)': parseFloat(submittedData.Distance_Time_SL),
               'Kalkulált útidő (ó)': parseFloat(submittedData.Distance_SL) / 70, // kalkuláció példa: 70 km/h sebességgel
               'UserID': String(submittedData.UserID),
               'ASANA task ID': String(submittedData.AsanaTaskID_SL),
