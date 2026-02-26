@@ -31,6 +31,7 @@ app.use((req, res, next) => {
 const workerEmailMapping = {
   'Bányai Gábor': 'banyai.gabor@promir.hu', // Replace with the actual email
   'Bozóki Róbert': 'bozoki.robert@promir.hu', // Replace with the actual email
+  'Dani Zoltán': 'dani.zoltan@promir.hu', // Replace with the actual email
   'Deák Ádám': 'deak.adam@promir.hu', // Replace with the actual email
   'Keller Zoltán': 'keller.zoltan@promir.hu', // Replace with the actual email
   'Kis Péter': 'kis.peter@promir.hu', // Replace with the actual email
@@ -201,7 +202,10 @@ app.get('/form/metadata', async (req, res) => {
               id: 'Bozóki Róbert',
               label: 'Bozóki Róbert',
             },
-
+             {
+              id: 'Dani Zoltán',
+              label: 'Dani Zoltán',
+            },
             {
               id: 'Deák Ádám',
               label: 'Deák Ádám',
@@ -653,7 +657,7 @@ app.post('/form/submit', async (req, res) => {
         if (!submittedData.radio_button || submittedData.radio_button === 'Alapértelmezett') {
           const programmerNames = ['Bányai Gábor', 'Deák Ádám', 'Keller Zoltán', 'Mendei Árpád', 'Sinka Balázs', 'Tóth Szabolcs'];
           const planningNames = ['Bozóki Róbert', 'Klein Antal', 'Szepesi Róbert', 'Szöllősi Sándor', 'Szancsik Ferenc'];
-          const pmNames = ['Varga-Tóth István', 'Varga-Tóth Ádám', 'Palecska Gábor'];
+          const pmNames = ['Dani Zoltán', 'Varga-Tóth István', 'Varga-Tóth Ádám', 'Palecska Gábor'];
           const procurementNames = ['Kis Péter'];
 
           if (programmerNames.includes(workerName)) {
