@@ -37,6 +37,7 @@ const workerEmailMapping = {
   'Kis Péter': 'kis.peter@promir.hu', // Replace with the actual email
   'Klein Antal': 'klein.antal@promir.hu', // Replace with the actual email
   'Mendei Árpád': 'mendei.arpad@promir.hu', // Replace with the actual email
+  'Nagy László': 'nagy.laszlo@promir.hu',
   'Palecska Gábor': 'palecska.gabor@promir.hu', // Replace with the actual email
   'Sinka Balázs': 'sinka.balazs@promir.hu', // Replace with the actual email
   'Szancsik Ferenc': 'szancsik.ferenc@promir.hu', // Replace with the actual email
@@ -226,7 +227,10 @@ app.get('/form/metadata', async (req, res) => {
               id: 'Mendei Árpád',
               label: 'Mendei Árpád',
             },
-            
+           {
+              id: 'Nagy László',
+              label: 'Nagy László',
+            },
             {
               id: 'Palecska Gábor',
               label: 'Palecska Gábor',
@@ -544,7 +548,10 @@ app.get('/kulsosmunkalap/metadata', async (req, res) => {
               id: 'deak.adam@promir.hu',
               label: 'Deák Ádám',
             },
-            
+            {
+              id: 'nagy.laszlo@promir.hu',
+              label: 'Nagy László',
+            },
             {
               id: 'palecska.gabor@promir.hu',
               label: 'Palecska Gábor',
@@ -657,7 +664,7 @@ app.post('/form/submit', async (req, res) => {
         if (!submittedData.radio_button || submittedData.radio_button === 'Alapértelmezett') {
           const programmerNames = ['Bányai Gábor', 'Deák Ádám', 'Keller Zoltán', 'Mendei Árpád', 'Sinka Balázs', 'Tóth Szabolcs'];
           const planningNames = ['Bozóki Róbert', 'Klein Antal', 'Szepesi Róbert', 'Szöllősi Sándor', 'Szancsik Ferenc'];
-          const pmNames = ['Dani Zoltán', 'Varga-Tóth István', 'Varga-Tóth Ádám', 'Palecska Gábor'];
+          const pmNames = ['Dani Zoltán','Nagy László', 'Varga-Tóth István', 'Varga-Tóth Ádám', 'Palecska Gábor'];
           const procurementNames = ['Kis Péter'];
 
           if (programmerNames.includes(workerName)) {
